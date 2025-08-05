@@ -4,7 +4,6 @@
   "private": true,
   "proxy": "https://api.deepseek.com",
   "dependencies": {
-    "@xenova/transformers": "^2.15.0",
     "axios": "^1.6.0",
     "emoji-picker-react": "^4.12.2",
     "react": "^18.2.0",

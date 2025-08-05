@@ -3,7 +3,7 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import EmojiPicker from 'emoji-picker-react';
-import FrontendRAG from '../utils/frontendRAG';
+import SimpleFrontendRAG from '../utils/simpleFrontendRAG';
 
 const SYSTEM_PROMPT = `你是一个专业的大学咨询助手，专门为大学生提供学习和生活方面的建议。请根据用户的问题提供详细、实用的回答。`;
 
@@ -25,17 +25,17 @@ const FrontendRAGChat = () => {
   }, [messages]);
 
   useEffect(() => {
-    // 初始化前端RAG系统
+    // 初始化简化版前端RAG系统
     const initRAG = async () => {
       try {
         setRagStatus('initializing');
-        const rag = new FrontendRAG();
+        const rag = new SimpleFrontendRAG();
         await rag.initialize();
         setRagSystem(rag);
         setRagStatus('ready');
-        console.log('✅ 前端RAG系统已就绪');
+        console.log('✅ 简化版前端RAG系统已就绪');
       } catch (error) {
-        console.error('❌ 前端RAG系统初始化失败:', error);
+        console.error('❌ 简化版前端RAG系统初始化失败:', error);
         setRagStatus('error');
       }
     };
@@ -58,16 +58,16 @@ const FrontendRAGChat = () => {
     try {
       let ragContext = '';
       
-      // 使用前端RAG系统查询相关文档
+      // 使用简化版前端RAG系统查询相关文档
       if (ragSystem && ragStatus === 'ready') {
         try {
           const ragResult = await ragSystem.query(userMessage, 3);
           if (ragResult.relevant_docs && ragResult.relevant_docs.length > 0) {
             ragContext = `\n\n相关专业知识库信息：\n${ragResult.relevant_docs.join('\n\n')}`;
-            console.log('前端RAG查询结果:', ragResult);
+            console.log('简化版前端RAG查询结果:', ragResult);
           }
         } catch (ragError) {
-          console.log('前端RAG查询失败，继续使用DeepSeek API');
+          console.log('简化版前端RAG查询失败，继续使用DeepSeek API');
         }
       }
 
@@ -114,13 +114,13 @@ const FrontendRAGChat = () => {
   const getRagStatusText = () => {
     switch (ragStatus) {
       case 'initializing':
-        return '🔄 前端RAG系统初始化中...';
+        return '🔄 简化版前端RAG系统初始化中...';
       case 'ready':
-        return '✅ 前端RAG系统已就绪';
+        return '✅ 简化版前端RAG系统已就绪';
       case 'error':
-        return '❌ 前端RAG系统初始化失败';
+        return '❌ 简化版前端RAG系统初始化失败';
       default:
-        return '⏳ 前端RAG系统状态未知';
+        return '⏳ 简化版前端RAG系统状态未知';
     }
   };
 
@@ -129,7 +129,7 @@ const FrontendRAGChat = () => {
       {/* 头部 */}
       <div className="bg-white shadow-sm border-b px-6 py-4">
         <h1 className="text-xl font-semibold text-gray-800">AI智能咨询助手</h1>
-        <p className="text-sm text-gray-600 mt-1">基于前端RAG系统的智能对话</p>
+        <p className="text-sm text-gray-600 mt-1">基于简化版前端RAG系统的智能对话</p>
         <div className="mt-2 text-xs text-gray-500">
           {getRagStatusText()}
         </div>
