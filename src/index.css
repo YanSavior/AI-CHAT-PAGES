@@ -1,0 +1,483 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  background-color: #FFFFFF !important;
+  color: #212529 !important;
+  --primary-color: #22c55e;
+  --secondary-color: #64748b;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF !important;
+  color: #212529 !important;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #FFFFFF !important;
+  color: #212529 !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 动画类 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-pulse-custom {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-typing {
+  animation: typing 1.5s steps(30, end);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 毛玻璃效果 */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.dark .glassmorphism {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 移动端优化 */
+@media (max-width: 640px) {
+  .max-w-4xl {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .mobile-p-reduced {
+    padding: 0.5rem !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* 文本渐变效果 */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #22c55e, #16a34a);
+}
+
+/* 阴影过渡效果 */
+.shadow-transition {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.shadow-transition:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+} 
+
+/* AI智能体样式 */
+.ai-avatar-container {
+  position: absolute;
+  left: -130px;
+  top: -10px;
+  z-index: 10;
+  pointer-events: none;
+  width: 120px;
+  height: 140px;
+}
+
+.ai-avatar {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transform-origin: bottom center;
+  width: 100%;
+  height: 100%;
+  /* 移除所有过渡动画，实现瞬间切换 */
+  /* 添加属性避免渐进式加载 */
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* 强制硬件加速 */
+  will-change: transform; /* 优化性能 */
+}
+
+/* 图片切换瞬间完成，无过渡 */
+.ai-avatar > div {
+  /* 移除所有过渡动画 */
+  /* 添加属性避免渐进式加载 */
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* 强制硬件加速 */
+  will-change: transform, opacity; /* 优化性能 */
+}
+
+/* 默认状态摇摆动画 - 保持原始速率 */
+.ai-avatar.normal {
+  animation: gentleSway 4s ease-in-out infinite; /* 恢复原始4秒 */
+}
+
+@keyframes gentleSway {
+  0%, 100% { transform: rotate(-2deg) translateY(0px); }
+  50% { transform: rotate(2deg) translateY(-3px); }
+}
+
+/* 思考状态动画 - 保持原始速率 */
+.ai-avatar.thinking {
+  animation: thinkingSway 3s ease-in-out infinite; /* 恢复原始3秒 */
+}
+
+@keyframes thinkingSway {
+  0%, 100% { transform: rotate(-1deg) translateY(-2px); }
+  50% { transform: rotate(1deg) translateY(-2px); }
+}
+
+/* 恍然大悟状态动画 - 更快速的惊喜动作 */
+.ai-avatar.aha {
+  animation: ahaBounce 0.15s ease-out; /* 进一步减少到150ms */
+}
+
+@keyframes ahaBounce {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(5deg); }
+  50% { transform: scale(1.1) rotate(-3deg); }
+  75% { transform: scale(1.05) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 自然切换回正常状态的动画 - 更快速 */
+.ai-avatar.normal-return {
+  animation: gentleReturn 0.15s ease-out; /* 减少到150ms */
+}
+
+@keyframes gentleReturn {
+  0% { transform: scale(1.05) rotate(1deg); }
+  50% { transform: scale(1.02) rotate(-0.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 头发摇摆动画 - 保持原始速率 */
+.hair-group {
+  animation: hairSway 6s ease-in-out infinite; /* 恢复原始6秒 */
+}
+
+@keyframes hairSway {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+/* 刘海动画 - 保持原始速率 */
+.hair-bangs {
+  animation: bangsSway 5s ease-in-out infinite; /* 恢复原始5秒 */
+}
+
+@keyframes bangsSway {
+  0%, 100% { transform: rotate(-0.5deg); }
+  50% { transform: rotate(0.5deg); }
+}
+
+/* 头顶卷发动画 - 保持原始速率 */
+.hair-crown {
+  animation: crownSway 4s ease-in-out infinite; /* 恢复原始4秒 */
+  transform-origin: center;
+}
+
+@keyframes crownSway {
+  0%, 100% { transform: rotate(-1deg) translateY(0px); }
+  50% { transform: rotate(1deg) translateY(-2px); }
+}
+
+/* 头发高光动画 - 保持原始速率 */
+.hair-highlight {
+  animation: hairShine 4s ease-in-out infinite; /* 恢复原始4秒 */
+}
+
+@keyframes hairShine {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+}
+
+/* 黄色发夹动画 - 保持原始速率 */
+.hair-clips-left {
+  animation: clipsSway 3.5s ease-in-out infinite; /* 恢复原始3.5秒 */
+  transform-origin: center;
+}
+
+@keyframes clipsSway {
+  0%, 100% { transform: translate(0, 0) rotate(-0.5deg); }
+  50% { transform: translate(0, -1px) rotate(0.5deg); }
+}
+
+/* 蓝色发夹动画 - 保持原始速率 */
+.hair-clip-right {
+  animation: clipBlueSway 3s ease-in-out infinite; /* 恢复原始3秒 */
+  transform-origin: center;
+}
+
+@keyframes clipBlueSway {
+  0%, 100% { transform: translate(0, 0) rotate(-0.3deg); }
+  50% { transform: translate(0, -1px) rotate(0.3deg); }
+}
+
+/* 大蝴蝶结动画 - 保持原始速率 */
+.hair-bow {
+  animation: bigBowSway 3s ease-in-out infinite; /* 恢复原始3秒 */
+  transform-origin: center;
+}
+
+@keyframes bigBowSway {
+  0%, 100% { transform: translate(0, 0) rotate(-1deg); }
+  50% { transform: translate(0, -2px) rotate(1deg); }
+}
+
+/* 双马尾动画 - 可爱的摆动 */
+.hair-twin-tail-left, .hair-twin-tail-right {
+  animation: twinTailSway 4s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.hair-twin-tail-left {
+  animation-delay: 0s;
+}
+
+.hair-twin-tail-right {
+  animation-delay: 0.5s;
+}
+
+@keyframes twinTailSway {
+  0%, 100% { transform: rotate(-3deg) translateY(0px); }
+  25% { transform: rotate(-1deg) translateY(-2px); }
+  50% { transform: rotate(1deg) translateY(-1px); }
+  75% { transform: rotate(3deg) translateY(-3px); }
+}
+
+/* 头发高光动画 - 更明显的光泽 */
+.hair-highlight {
+  animation: hairShine 4s ease-in-out infinite;
+}
+
+@keyframes hairShine {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+}
+
+/* 蝴蝶结领结动画 */
+.neck-bow {
+  animation: neckBowSway 3.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes neckBowSway {
+  0%, 100% { transform: translate(0, 0) rotate(-0.5deg); }
+  50% { transform: translate(0, -1px) rotate(0.5deg); }
+}
+
+/* 装饰动画 - 闪烁效果 */
+.decorations circle {
+  animation: decorationTwinkle 2s ease-in-out infinite;
+}
+
+.decoration-1 { animation-delay: 0s; }
+.decoration-2 { animation-delay: 0.5s; }
+.decoration-3 { animation-delay: 1s; }
+.decoration-4 { animation-delay: 1.5s; }
+
+@keyframes decorationTwinkle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 思考特效动画 - 更可爱的粉色 */
+.thinking-bubble {
+  animation: thinkingPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes thinkingPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* 恍然大悟特效动画 - 更快速的效果 */
+.aha-bubble {
+  animation: ahaGlow 0.15s ease-out; /* 进一步减少到150ms */
+}
+
+@keyframes ahaGlow {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.3); }
+  100% { opacity: 0.9; transform: scale(1); }
+}
+
+/* 输入框容器相对定位，为AI智能体提供定位参考 */
+.input-area {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* 确保输入框区域有足够空间显示AI智能体 */
+.input-area .relative {
+  overflow: visible;
+}
+
+/* 确保整个聊天界面不会裁剪AI智能体 */
+.qq-style-chat {
+  overflow: visible;
+}
+
+/* 输入框样式优化 */
+.input-area textarea {
+  border: 1px solid #e5e7eb !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  outline: none !important;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+.input-area textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+.input-area textarea:disabled {
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #6b7280 !important;
+}
+
+/* 舌头动画 - 可爱的吐舌头效果 */
+.tongue {
+  animation: tongueWiggle 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes tongueWiggle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.05) rotate(1deg); }
+}
+
+/* 袜子动画 - 轻微的摆动 */
+.sock-left, .sock-right {
+  animation: sockSway 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.sock-left {
+  animation-delay: 0s;
+}
+
+.sock-right {
+  animation-delay: 0.5s;
+}
+
+@keyframes sockSway {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-1px); }
+}
+
+/* 鞋子动画 - 轻微的摆动 */
+.shoe-left, .shoe-right {
+  animation: shoeSway 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.shoe-left {
+  animation-delay: 0s;
+}
+
+.shoe-right {
+  animation-delay: 0.5s;
+}
+
+@keyframes shoeSway {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-1px); }
+} 

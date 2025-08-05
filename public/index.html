@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#22c55e" />
+    <meta
+      name="description"
+      content="AI助手 - 基于DeepSeek大模型的职业规划顾问"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- 引入Inter字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 预加载AI形象图片，避免渐进式加载 -->
+    <link rel="preload" href="%PUBLIC_URL%/Picturee.png" as="image" type="image/png">
+    <link rel="preload" href="%PUBLIC_URL%/Picture1.png" as="image" type="image/png">
+    <link rel="preload" href="%PUBLIC_URL%/Picture2.png" as="image" type="image/png">
+    
+    <title>AI助手 - 职业规划顾问</title>
+    
+    <style>
+      /* 页面加载动画 */
+      .loader-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100%;
+        position: fixed;
+        background-color: #ffffff;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 5px solid #22c55e;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .fade-out {
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>您需要启用JavaScript才能运行此应用。</noscript>
+    
+    <!-- 加载动画 -->
+    <div id="loader-container" class="loader-container">
+      <div class="loader"></div>
+    </div>
+    
+    <div id="root"></div>
+    
+    <script>
+      // 页面加载完成后隐藏加载动画
+      window.addEventListener('load', function() {
+        const loaderContainer = document.getElementById('loader-container');
+        loaderContainer.classList.add('fade-out');
+        setTimeout(function() {
+          loaderContainer.style.display = 'none';
+        }, 500);
+      });
+    </script>
+  </body>
+</html> 
