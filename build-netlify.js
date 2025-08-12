@@ -71,7 +71,9 @@ async function buildForNetlify() {
   try {
     console.log('🧹 清理旧的构建文件...');
     if (fs.existsSync(BUILD_CONFIG.outputDir)) {
-      execSync(`rmdir /s /q ${BUILD_CONFIG.outputDir}`, { stdio: 'inherit' });
+      // 跨平台删除目录
+      fs.rmSync(BUILD_CONFIG.outputDir, { recursive: true, force: true });
+      console.log(`✅ 已删除旧构建目录: ${BUILD_CONFIG.outputDir}`);
     }
     
     console.log('📦 执行 React 构建...');
