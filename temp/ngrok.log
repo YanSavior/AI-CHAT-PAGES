@@ -1,0 +1,20 @@
+t=2025-08-11T15:52:54+0800 lvl=info msg="no configuration paths supplied"
+t=2025-08-11T15:52:54+0800 lvl=info msg="using configuration at default config path" path=C:\\Users\\38754\\AppData\\Local/ngrok/ngrok.yml
+t=2025-08-11T15:52:54+0800 lvl=info msg="open config file" path=C:\\Users\\38754\\AppData\\Local\\ngrok\\ngrok.yml err=nil
+t=2025-08-11T15:52:54+0800 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+t=2025-08-11T15:52:56+0800 lvl=info msg="client session established" obj=tunnels.session
+t=2025-08-11T15:52:56+0800 lvl=info msg="tunnel session started" obj=tunnels.session
+t=2025-08-11T15:52:56+0800 lvl=info msg="started tunnel" obj=tunnels name=command_line addr=http://localhost:8000 url=https://9399722568ad.ngrok-free.app
+t=2025-08-11T15:54:10+0800 lvl=eror msg="session closed, starting reconnect loop" obj=tunnels.session obj=csess id=578699b9eef7 err="read EOF from remote peer"
+t=2025-08-11T15:54:18+0800 lvl=info msg="client session established" obj=tunnels.session
+t=2025-08-11T15:54:18+0800 lvl=info msg="tunnel session started" obj=tunnels.session
+t=2025-08-11T15:54:31+0800 lvl=eror msg="heartbeat timeout, terminating session" obj=tunnels.session obj=csess id=0b50996eddcc clientid=64c77e10485a393f52cc16c2253309f6
+t=2025-08-11T16:33:21+0800 lvl=eror msg="session closed, starting reconnect loop" obj=tunnels.session obj=csess id=578699b9eef7 err="read EOF from remote peer"
+t=2025-08-11T16:33:24+0800 lvl=info msg="client session established" obj=tunnels.session
+t=2025-08-11T16:33:24+0800 lvl=info msg="tunnel session started" obj=tunnels.session
+t=2025-08-11T16:33:42+0800 lvl=eror msg="heartbeat timeout, terminating session" obj=tunnels.session obj=csess id=d62d003847e8 clientid=64c77e10485a393f52cc16c2253309f6
+t=2025-08-11T16:48:24+0800 lvl=info msg="received stop request" obj=app stopReq="{err:<nil> restart:false}"
+t=2025-08-11T16:48:24+0800 lvl=info msg="session closing" obj=tunnels.session err=nil
+t=2025-08-11T16:48:24+0800 lvl=info msg="accept failed" obj=tunnels.session obj=csess id=578699b9eef7 err="reconnecting session closed"
+t=2025-08-11T16:48:24+0800 lvl=info msg="no more state changes" obj=tunnels.session
+t=2025-08-11T16:48:24+0800 lvl=info msg="failed to accept connection: Listener closed" obj=tunnels.session clientid=c23b4996f4c2ec603371624d1ebc19c4

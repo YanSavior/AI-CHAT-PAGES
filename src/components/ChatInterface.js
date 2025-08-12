@@ -7,33 +7,34 @@ import { graduateData } from '../data/graduateData';
 import pyfaData from '../data/pyfaData.json';
 import pyfaData1 from '../data/pyfaData-1.json';
 import AIAvatar from './AIAvatar';
+// 导入混合RAG系统
+import HybridRAGSystem from '../utils/hybridRAGSystem';
+// 导入全局RAG系统
+import globalRAGSystem from '../utils/GlobalRAGSystem';
+// 导入API配置
+import config, { validateConfig } from '../config/apiConfig';
 
-// 创建一个配置了基础 URL 的 axios 实例
-const getApiBaseURL = () => {
-  // 如果是开发环境，使用本地地址
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:8000';
-  }
-  // 如果是生产环境，使用部署的RAG API地址
-  // TODO: 部署完成后，请将下面的URL替换为实际的Railway域名
-  // 例如：https://your-app-name.railway.app
-  return 'https://your-rag-api.railway.app'; // 替换为实际部署地址
-};
+// 验证配置
+const configValidation = validateConfig();
+if (!configValidation.valid) {
+  console.warn('⚠️ API配置存在问题:', configValidation.errors);
+}
 
+// 创建DeepSeek API客户端
 const api = axios.create({
-  baseURL: 'https://api.deepseek.com',
+  baseURL: config.deepseek.baseURL,
+  timeout: config.deepseek.timeout,
   headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer sk-7f5214ed15764dfea0b45c84c6d0c961'
+    ...config.deepseek.headers,
+    'Authorization': `Bearer ${config.deepseek.apiKey}`
   }
 });
 
-// RAG API客户端
+// 创建RAG API客户端
 const ragApi = axios.create({
-  baseURL: getApiBaseURL(),
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: config.rag.baseURL,
+  timeout: config.rag.timeout,
+  headers: config.rag.headers
 });
 
 // 辅助函数：根据用户输入内容智能匹配专业
@@ -103,31 +104,64 @@ const ChatInterface = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isAIAvatarReplying, setIsAIAvatarReplying] = useState(false);
   const [ragApiStatus, setRagApiStatus] = useState('checking'); // 'checking', 'available', 'unavailable'
+  // 混合RAG系统状态
+  const [hybridRagSystem, setHybridRagSystem] = useState(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const emojiPickerRef = useRef(null);
 
-  // 检测RAG API状态
+  // 初始化混合RAG系统
   useEffect(() => {
+    const initHybridRAG = async () => {
+      try {
+        console.log('初始化混合RAG系统...');
+        setRagApiStatus('checking');
+        
+        // 创建混合RAG系统实例
+        const hybridRAG = new HybridRAGSystem({
+          systemPrompt: SYSTEM_PROMPT,
+          topK: 3
+        });
+        
+        // 初始化系统
+        await hybridRAG.initialize();
+        setHybridRagSystem(hybridRAG);
+        
+        // 获取系统状态
+        const status = hybridRAG.getStatus();
+        if (status.localRAG.hasDocuments) {
+          setRagApiStatus('available');
+          console.log('✅ 混合RAG系统已就绪');
+        } else {
+          setRagApiStatus('unavailable');
+          console.log('❌ 混合RAG系统初始化失败：没有加载到文档');
+        }
+      } catch (error) {
+        console.error('❌ 混合RAG系统初始化失败:', error);
+        setRagApiStatus('unavailable');
+      }
+    };
+    
+    // 同时检查远程RAG API和初始化本地混合RAG系统
     const checkRagApiStatus = async () => {
       try {
+        console.log('检查RAG API状态...');
         const response = await ragApi.get('/api/health');
         if (response.data && response.data.status === 'healthy') {
           setRagApiStatus('available');
-          console.log('✅ RAG API 可用');
+          console.log('✅ RAG API可用');
         } else {
-          setRagApiStatus('unavailable');
-          console.log('❌ RAG API 不可用');
+          // 如果远程API不可用，启用本地混合RAG系统
+          initHybridRAG();
         }
       } catch (error) {
-        setRagApiStatus('unavailable');
-        console.log('❌ RAG API 连接失败:', error.message);
+        console.log('❌ RAG API不可用，将使用本地混合RAG系统');
+        // 启用本地混合RAG系统
+        initHybridRAG();
       }
     };
-
-    // 延迟检测，避免在开发环境立即检测
-    const timer = setTimeout(checkRagApiStatus, 1000);
-    return () => clearTimeout(timer);
+    
+    checkRagApiStatus();
   }, []);
 
   const scrollToBottom = () => {
@@ -174,6 +208,10 @@ const ChatInterface = () => {
     e.preventDefault();
     if (!inputMessage.trim() || isLoading) return;
 
+    console.log('===========================================');
+    console.log('🚀 用户提交问题:', inputMessage);
+    console.log('===========================================');
+
     const userMessage = {
       id: Date.now(),
       text: inputMessage,
@@ -183,6 +221,7 @@ const ChatInterface = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
+    setShowEmojiPicker(false);
     setIsLoading(true);
     setError(null);
 
@@ -192,28 +231,77 @@ const ChatInterface = () => {
     if (!lastUserMajor && userMajor) setLastUserMajor(userMajor);
 
     try {
-      // 首先通过RAG系统获取相关知识
+      // 使用RAG获取相关知识
       let ragContext = '';
+      let globalRagContext = '';
+      
+      // 首先总是查询全局RAG系统（包含用户自定义知识）
       try {
-        const ragResponse = await ragApi.post('/query', {
-          question: inputMessage,
-          top_k_retrieve: 5,
-          top_k_final: 3
-        });
-        
-        if (ragResponse.data && ragResponse.data.relevant_docs) {
-          ragContext = `\n\n相关专业知识库信息：\n${ragResponse.data.relevant_docs.join('\n\n')}`;
+        console.log('🌐 查询全局RAG系统...');
+        const globalResult = await globalRAGSystem.query(inputMessage, 3);
+        if (globalResult.relevant_docs && globalResult.relevant_docs.length > 0) {
+          globalRagContext = `\n\n用户自定义知识库信息：\n${globalResult.relevant_docs.join('\n\n')}`;
+          console.log('✅ 全局RAG系统查询结果:', globalResult);
+        } else {
+          console.log('🔍 全局RAG系统未找到相关结果');
         }
-      } catch (ragError) {
-        console.log('RAG系统未运行，继续使用DeepSeek API');
+      } catch (globalError) {
+        console.log('❌ 全局RAG系统查询失败:', globalError.message);
+      }
+      
+      // 策略1: 尝试使用远程RAG API
+      if (ragApiStatus === 'available') {
+        try {
+          // 首先尝试远程RAG API
+          const ragResult = await ragApi.post('/api/query', {
+            question: inputMessage,
+            top_k_retrieve: 5,
+            top_k_final: 3
+          });
+          
+          if (ragResult.data && ragResult.data.relevant_docs && ragResult.data.relevant_docs.length > 0) {
+            ragContext = `\n\n相关专业知识库信息：\n${ragResult.data.relevant_docs.join('\n\n')}`;
+            console.log('RAG API查询结果:', ragResult.data);
+          }
+        } catch (ragError) {
+          console.log('远程RAG API查询失败，尝试使用本地混合RAG系统:', ragError.message);
+          
+          // 策略2: 如果远程API失败，尝试使用本地混合RAG系统
+          if (hybridRagSystem) {
+            try {
+              const hybridResult = await hybridRagSystem.localRAG.query(inputMessage, 3);
+              if (hybridResult.relevant_docs && hybridResult.relevant_docs.length > 0) {
+                ragContext = `\n\n相关专业知识库信息：\n${hybridResult.relevant_docs.join('\n\n')}`;
+                console.log('本地混合RAG系统查询结果:', hybridResult);
+              }
+            } catch (hybridError) {
+              console.log('本地混合RAG系统查询失败:', hybridError.message);
+            }
+          }
+        }
+      } else if (hybridRagSystem) {
+        // 如果远程API不可用，直接使用本地混合RAG系统
+        try {
+          const hybridResult = await hybridRagSystem.localRAG.query(inputMessage, 3);
+          if (hybridResult.relevant_docs && hybridResult.relevant_docs.length > 0) {
+            ragContext = `\n\n相关专业知识库信息：\n${hybridResult.relevant_docs.join('\n\n')}`;
+            console.log('本地混合RAG系统查询结果:', hybridResult);
+          }
+        } catch (hybridError) {
+          console.log('本地混合RAG系统查询失败:', hybridError.message);
+        }
       }
 
+      // 合并所有RAG查询结果
+      const finalRagContext = globalRagContext + ragContext;
+
+      // 调用DeepSeek API生成回答
       const response = await api.post('/v1/chat/completions', {
         model: 'deepseek-chat',
         messages: [
           {
             role: 'system',
-            content: `${SYSTEM_PROMPT}\n\n可用的毕业生数据如下：${JSON.stringify(graduateData, null, 2)}\n\n${userMajor ? `该用户专业为：${userMajor}，以下是该专业的培养方案内容：\n${pyfaText}` : ''}${ragContext}`
+            content: `${SYSTEM_PROMPT}\n\n可用的毕业生数据如下：${JSON.stringify(graduateData, null, 2)}\n\n${userMajor ? `该用户专业为：${userMajor}，以下是该专业的培养方案内容：\n${pyfaText}` : ''}${finalRagContext}`
           },
           ...messages.map(msg => ({
             role: msg.sender === 'user' ? 'user' : 'assistant',
@@ -255,11 +343,46 @@ const ChatInterface = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      setError(
-        error.response?.data?.error?.message || 
-        error.message || 
-        '抱歉，发生了一些错误。请确保已配置正确的 API 密钥。'
-      );
+      
+      // 如果API调用失败，尝试完全使用混合RAG系统
+      if (hybridRagSystem) {
+        try {
+          console.log('DeepSeek API调用失败，尝试使用混合RAG系统完全处理...');
+          const hybridResponse = await hybridRagSystem.query(inputMessage);
+          
+          const aiMessage = {
+            id: Date.now() + 1,
+            text: hybridResponse.answer,
+            sender: 'ai',
+            time: formatTime()
+          };
+          
+          setIsAIAvatarReplying(true);
+          
+          setMessages(prev => {
+            const aiText = filterMermaidGantt(aiMessage.text || '').trim();
+            if (!aiText) return prev;
+            return [...prev, { ...aiMessage, text: aiText }];
+          });
+          
+          if (isFirstMessage) {
+            setIsFirstMessage(false);
+          }
+        } catch (hybridError) {
+          console.error('混合RAG系统处理失败:', hybridError);
+          setError(
+            error.response?.data?.error?.message || 
+            error.message || 
+            '抱歉，发生了一些错误。请确保已配置正确的 API 密钥。'
+          );
+        }
+      } else {
+        setError(
+          error.response?.data?.error?.message || 
+          error.message || 
+          '抱歉，发生了一些错误。请确保已配置正确的 API 密钥。'
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -286,43 +409,6 @@ const ChatInterface = () => {
                     智慧校园，为您服务
                   </p>
                 </div>
-              </div>
-              
-              {/* RAG API 状态显示 */}
-              <div className="mb-4 p-3 rounded-lg bg-gray-50 border">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">知识库状态：</span>
-                  <div className="flex items-center space-x-2">
-                    {ragApiStatus === 'checking' && (
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-yellow-600">检测中...</span>
-                      </div>
-                    )}
-                    {ragApiStatus === 'available' && (
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-xs text-green-600">已连接</span>
-                      </div>
-                    )}
-                    {ragApiStatus === 'unavailable' && (
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                        <span className="text-xs text-red-600">未连接</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {ragApiStatus === 'available' && (
-                  <p className="text-xs text-green-600 mt-1">
-                    ✅ 知识库已启用，AI将基于专业数据进行回答
-                  </p>
-                )}
-                {ragApiStatus === 'unavailable' && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    ℹ️ 知识库未连接，AI将使用基础模式回答
-                  </p>
-                )}
               </div>
               
               <div className="prompt-box mb-4">

@@ -25,27 +25,39 @@ class SimpleFrontendRAG {
     try {
       console.log('尝试加载知识库数据...');
       
-      // 尝试多个可能的路径
-      const possiblePaths = [
-        '/data/knowledge_base.json',
-        './data/knowledge_base.json',
-        'data/knowledge_base.json',
-        '/knowledge_base.json'
+      // 主知识库文件路径
+      const mainKnowledgeBasePaths = [
+        `${window.location.origin}/data/knowledge_base.json`,
+        '/data/knowledge_base.json'
       ];
 
-      let data = null;
-      let loadedPath = null;
+      // 额外知识库文件路径
+      const additionalKnowledgeBasePaths = [
+        `${window.location.origin}/data/cqupt_knowledge.json`,
+        '/data/cqupt_knowledge.json'
+      ];
 
-      for (const path of possiblePaths) {
+      // 初始化知识库
+      this.knowledgeBase = [];
+      
+      // 加载主知识库
+      for (const path of mainKnowledgeBasePaths) {
         try {
-          console.log(`尝试从路径加载: ${path}`);
+          console.log(`尝试从路径加载主知识库: ${path}`);
           const response = await fetch(path);
+          console.log(`主知识库加载响应状态: ${response.status}`);
           
           if (response.ok) {
-            data = await response.json();
-            loadedPath = path;
-            console.log(`成功从 ${path} 加载知识库`);
-            break;
+            const data = await response.json();
+            console.log('主知识库数据:', data);
+            if (data && Array.isArray(data.documents)) {
+              this.knowledgeBase = [...this.knowledgeBase, ...data.documents];
+              console.log(`成功从 ${path} 加载主知识库，包含 ${data.documents.length} 个文档`);
+              // mainDataLoaded = true; // 移除未使用的变量
+              break;
+            } else {
+              console.log('主知识库数据格式无效');
+            }
           } else {
             console.log(`路径 ${path} 返回状态: ${response.status}`);
           }
@@ -54,12 +66,35 @@ class SimpleFrontendRAG {
         }
       }
 
-      if (data && data.documents) {
-        this.knowledgeBase = data.documents;
-        console.log(`成功加载了 ${this.knowledgeBase.length} 个文档`);
-      } else {
+      // 尝试加载额外知识库
+      for (const path of additionalKnowledgeBasePaths) {
+        try {
+          console.log(`尝试从路径加载额外知识库: ${path}`);
+          const response = await fetch(path);
+          console.log(`额外知识库加载响应状态: ${response.status}`);
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('额外知识库数据:', data);
+            if (data && Array.isArray(data.documents)) {
+              this.knowledgeBase = [...this.knowledgeBase, ...data.documents];
+              console.log(`成功从 ${path} 加载额外知识库，包含 ${data.documents.length} 个文档`);
+            } else {
+              console.log('额外知识库数据格式无效');
+            }
+          }
+        } catch (pathError) {
+          console.log(`额外知识库路径 ${path} 加载失败:`, pathError.message);
+        }
+      }
+
+      // 如果没有加载到任何知识库，使用默认知识库
+      if (this.knowledgeBase.length === 0) {
         console.log('所有路径都失败，使用默认知识库');
         this.useDefaultKnowledgeBase();
+      } else {
+        console.log(`成功加载了总计 ${this.knowledgeBase.length} 个文档`);
+        console.log('当前知识库内容:', this.knowledgeBase);
       }
       
     } catch (error) {
@@ -118,37 +153,123 @@ class SimpleFrontendRAG {
     console.log(`默认知识库加载完成，包含 ${this.knowledgeBase.length} 个文档`);
   }
 
-  // 简单的关键词匹配算法
-  extractKeywords(text) {
-    const keywords = [
-      '计算机', '软件', '人工智能', '数据', '网络', '安全', '数字媒体', '物联网', '云计算', '大数据',
-      '编程', '算法', '数据结构', '操作系统', '数据库', '机器学习', '深度学习', '前端', '后端', '移动开发',
-      'Java', 'Python', 'C++', 'JavaScript', 'HTML', 'CSS', 'MySQL', 'MongoDB', 'Redis',
-      'AWS', 'Azure', '阿里云', '腾讯云', 'Docker', 'Kubernetes', 'DevOps',
-      '大学', '一年级', '二年级', '三年级', '四年级', '课程', '学习', '专业',
-      '就业', '工作', '实习', '创业', '研究生', '博士', '竞赛', '开源', '博客',
-      '英语', '团队', '时间管理', '健康', '心理', '职业规划'
-    ];
+  // 改进的文本相似度计算（基于内容而非关键词列表）
+  calculateSimilarity(query, document) {
+    // 转换为小写进行比较
+    const queryLower = query.toLowerCase().trim();
+    const documentLower = document.toLowerCase().trim();
     
-    const foundKeywords = keywords.filter(keyword => 
-      text.toLowerCase().includes(keyword.toLowerCase())
-    );
+    // 策略1：直接完全匹配或包含匹配（最高权重）
+    if (queryLower === documentLower) {
+      return 1.0;
+    }
     
-    return foundKeywords;
+    if (documentLower.includes(queryLower) || queryLower.includes(documentLower)) {
+      return 0.9;
+    }
+    
+    // 策略2：智能分词和部分匹配
+    const queryTokens = this.tokenizeText(query);
+    const documentTokens = this.tokenizeText(document);
+    
+    if (queryTokens.length === 0) return 0;
+    
+    // 计算词汇重叠度
+    let exactMatches = 0;
+    let partialMatches = 0;
+    
+    for (const queryToken of queryTokens) {
+      // 完全匹配
+      if (documentTokens.includes(queryToken)) {
+        exactMatches++;
+        continue;
+      }
+      
+      // 部分匹配
+      for (const docToken of documentTokens) {
+        if (queryToken.length >= 2 && docToken.length >= 2) {
+          if (queryToken.includes(docToken) || docToken.includes(queryToken)) {
+            partialMatches += 0.5;
+            break;
+          }
+        }
+      }
+    }
+    
+    // 策略3：字符级相似度（用于捕获拼写变化）
+    const charSimilarity = this.calculateCharSimilarity(queryLower, documentLower);
+    
+    // 综合计算相似度
+    const exactScore = exactMatches / queryTokens.length;
+    const partialScore = partialMatches / queryTokens.length;
+    const charScore = charSimilarity * 0.3; // 降低字符匹配的权重
+    
+    const finalScore = exactScore * 0.6 + partialScore * 0.3 + charScore;
+    
+    return Math.min(finalScore, 1.0);
   }
 
-  // 计算文本相似度（基于关键词匹配）
-  calculateSimilarity(query, document) {
-    const queryKeywords = this.extractKeywords(query);
-    const documentKeywords = this.extractKeywords(document);
+  // 改进的文本分词（中文友好）
+  tokenizeText(text) {
+    if (!text) return [];
     
-    if (queryKeywords.length === 0) return 0;
+    // 基本清理和分割
+    const cleaned = text.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s]/g, ' ');
     
-    const commonKeywords = queryKeywords.filter(keyword => 
-      documentKeywords.includes(keyword)
-    );
+    // 按空格分割
+    const spaceTokens = cleaned.split(/\s+/).filter(token => token.length > 0);
     
-    return commonKeywords.length / queryKeywords.length;
+    // 中文n-gram分词（2-3字符组合）
+    const ngramTokens = [];
+    for (const token of spaceTokens) {
+      if (token.length >= 2) {
+        // 添加完整词
+        ngramTokens.push(token);
+        
+        // 为长词添加子串
+        if (token.length >= 3) {
+          for (let i = 0; i <= token.length - 2; i++) {
+            ngramTokens.push(token.substring(i, i + 2));
+            if (i <= token.length - 3) {
+              ngramTokens.push(token.substring(i, i + 3));
+            }
+          }
+        }
+      }
+    }
+    
+    return [...new Set(ngramTokens)]; // 去重
+  }
+
+  // 字符级相似度计算
+  calculateCharSimilarity(str1, str2) {
+    if (!str1 || !str2) return 0;
+    
+    const len1 = str1.length;
+    const len2 = str2.length;
+    
+    if (len1 === 0 || len2 === 0) return 0;
+    
+    // 计算公共字符数
+    let commonChars = 0;
+    const chars1 = str1.split('');
+    const chars2 = str2.split('');
+    
+    for (const char of chars1) {
+      const index = chars2.indexOf(char);
+      if (index !== -1) {
+        commonChars++;
+        chars2.splice(index, 1); // 避免重复计算
+      }
+    }
+    
+    return commonChars / Math.max(len1, len2);
+  }
+
+  // 移除原来基于固定关键词列表的方法
+  extractKeywords(text) {
+    // 简化版：直接返回文本的所有token
+    return this.tokenizeText(text);
   }
 
   async query(question, topK = 3) {

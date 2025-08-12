@@ -14,7 +14,6 @@ const FrontendRAGChat = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [ragSystem, setRagSystem] = useState(null);
   const [ragStatus, setRagStatus] = useState('initializing'); // 'initializing', 'ready', 'error'
-  const [ragDetails, setRagDetails] = useState({});
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -26,7 +25,7 @@ const FrontendRAGChat = () => {
   }, [messages]);
 
   useEffect(() => {
-    // 初始化简化版前端RAG系统
+    // 初始化前端RAG系统
     const initRAG = async () => {
       try {
         setRagStatus('initializing');
@@ -36,17 +35,16 @@ const FrontendRAGChat = () => {
         
         // 获取RAG系统状态
         const status = rag.getStatus();
-        setRagDetails(status);
         
         if (status.hasDocuments) {
           setRagStatus('ready');
-          console.log('✅ 简化版前端RAG系统已就绪');
+          console.log('✅ 前端RAG系统已就绪');
         } else {
           setRagStatus('error');
-          console.log('❌ 简化版前端RAG系统初始化失败：没有加载到文档');
+          console.log('❌ 前端RAG系统初始化失败：没有加载到文档');
         }
       } catch (error) {
-        console.error('❌ 简化版前端RAG系统初始化失败:', error);
+        console.error('❌ 前端RAG系统初始化失败:', error);
         setRagStatus('error');
       }
     };
@@ -122,33 +120,12 @@ const FrontendRAGChat = () => {
     setInputMessage(prev => prev + emojiObject.emoji);
   };
 
-  const getRagStatusText = () => {
-    switch (ragStatus) {
-      case 'initializing':
-        return '🔄 简化版前端RAG系统初始化中...';
-      case 'ready':
-        return `✅ 简化版前端RAG系统已就绪 (${ragDetails.documentCount} 个文档)`;
-      case 'error':
-        return `❌ 简化版前端RAG系统初始化失败 (${ragDetails.documentCount} 个文档)`;
-      default:
-        return '⏳ 简化版前端RAG系统状态未知';
-    }
-  };
-
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* 头部 */}
       <div className="bg-white shadow-sm border-b px-6 py-4">
         <h1 className="text-xl font-semibold text-gray-800">AI智能咨询助手</h1>
-        <p className="text-sm text-gray-600 mt-1">基于简化版前端RAG系统的智能对话</p>
-        <div className="mt-2 text-xs text-gray-500">
-          {getRagStatusText()}
-        </div>
-        {ragDetails.documentCount > 0 && (
-          <div className="mt-1 text-xs text-green-600">
-            📚 知识库已加载，包含 {ragDetails.documentCount} 条专业知识
-          </div>
-        )}
+        <p className="text-sm text-gray-600 mt-1">基于前端RAG系统的智能对话</p>
       </div>
 
       {/* 消息区域 */}
@@ -158,20 +135,6 @@ const FrontendRAGChat = () => {
             <div className="text-6xl mb-4">🤖</div>
             <p className="text-lg">欢迎使用AI智能咨询助手！</p>
             <p className="text-sm mt-2">我可以为您提供学习和生活方面的建议</p>
-            {ragStatus === 'ready' && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-700">
-                  ✅ RAG系统已就绪，可以为您提供专业的知识库支持
-                </p>
-              </div>
-            )}
-            {ragStatus === 'error' && (
-              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-700">
-                  ⚠️ RAG系统初始化失败，将使用基础模式回答
-                </p>
-              </div>
-            )}
           </div>
         )}
         

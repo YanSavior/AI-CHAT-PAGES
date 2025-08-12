@@ -4,7 +4,9 @@
   "private": true,
   "proxy": "https://api.deepseek.com",
   "dependencies": {
-    "axios": "^1.6.0",
+    "@ant-design/icons": "^6.0.0",
+    "antd": "^5.26.7",
+    "axios": "^1.11.0",
     "emoji-picker-react": "^4.12.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -15,8 +17,12 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build:netlify": "node build-netlify.js",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "move-plans": "node scripts/moveCultivationPlans.js",
+    "prestart": "npm run move-plans",
+    "prebuild:netlify": "npm run move-plans"
   },
   "eslintConfig": {
     "extends": [

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件路径测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .loading { background-color: #fff3cd; border-color: #ffeaa7; }
+    </style>
+</head>
+<body>
+    <h1>培养方案文件路径测试</h1>
+    <div id="test-results"></div>
+
+    <script>
+        const testFiles = [
+            '培养方案/showPyfaPdf.json',
+            '培养方案/showPyfaPdf-1 (1).json',
+            '培养方案/showPyfaPdf-1 (2).json',
+            '培养方案/showPyfaPdf-1 (3).json',
+            '培养方案/showPyfaPdf-1 (4).json',
+            '培养方案/showPyfaPdf-1 (5).json',
+            '培养方案/showPyfaPdf-1 (6).json',
+            '培养方案/showPyfaPdf-1 (7).json',
+            '培养方案/showPyfaPdf-1 (8).json',
+            '培养方案/showPyfaPdf-1 (9).json'
+        ];
+
+        async function testFileAccess() {
+            const resultsDiv = document.getElementById('test-results');
+            
+            for (const filePath of testFiles) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-item loading';
+                testDiv.innerHTML = `<strong>${filePath}</strong> - 测试中...`;
+                resultsDiv.appendChild(testDiv);
+                
+                try {
+                    const fullUrl = `${window.location.origin}/${filePath}`;
+                    console.log(`测试URL: ${fullUrl}`);
+                    
+                    const response = await fetch(fullUrl);
+                    
+                    if (response.ok) {
+                        const content = await response.text();
+                        testDiv.className = 'test-item success';
+                        testDiv.innerHTML = `<strong>${filePath}</strong> - ✅ 成功 (${content.length} bytes)`;
+                    } else {
+                        testDiv.className = 'test-item error';
+                        testDiv.innerHTML = `<strong>${filePath}</strong> - ❌ 失败 (状态码: ${response.status})`;
+                    }
+                } catch (error) {
+                    testDiv.className = 'test-item error';
+                    testDiv.innerHTML = `<strong>${filePath}</strong> - ❌ 错误: ${error.message}`;
+                }
+            }
+        }
+
+        // 页面加载后开始测试
+        window.addEventListener('load', testFileAccess);
+    </script>
+</body>
+</html> 

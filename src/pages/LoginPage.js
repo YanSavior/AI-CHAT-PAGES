@@ -6,14 +6,19 @@ const LoginPage = ({ onLogin }) => {
   const [showError, setShowError] = useState(false);
 
   const handleLogin = () => {
-    // 检查账号是否为10位数字且以2024215开头
+    // 管理员模式：账号cqupt，密码1950
+    const isAdmin = username === 'cqupt' && password === '1950';
+    
+    // 普通用户模式：检查账号是否为10位数字且以2024215开头
     const isValidAccount = /^2024215\d{3}$/.test(username);
     
     // 检查密码是否为账号的后三位数字
     const isValidPassword = password === username.slice(-3);
     
-    if (isValidAccount && isValidPassword) {
-      onLogin(); // 登录成功
+    if (isAdmin) {
+      onLogin(true); // 管理员登录成功
+    } else if (isValidAccount && isValidPassword) {
+      onLogin(false); // 普通用户登录成功
     } else {
       setShowError(true);
       // 3秒后自动隐藏错误提示

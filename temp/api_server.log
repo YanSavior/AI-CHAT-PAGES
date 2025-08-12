@@ -1,0 +1,48 @@
+E:\Projects\ai-chat-app - 副本 - 副本\api_server.py:40: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Will watch for changes in these directories: ['E:\\Projects\\ai-chat-app - 副本 - 副本']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [15428] using WatchFiles
+INFO:     Started server process [21068]
+INFO:     Waiting for application startup.
+ERROR:    Traceback (most recent call last):
+  File "E:\Projects\ai-chat-app - 副本 - 副本\rag_system\vectorizer.py", line 57, in __init__
+    print(f"\U0001f504 正在加载BGE模型: {model_name}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f504' in position 0: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\38754\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 694, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\38754\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 571, in __aenter__
+    await self._router.startup()
+  File "C:\Users\38754\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 671, in startup
+    await handler()
+  File "E:\Projects\ai-chat-app - 副本 - 副本\api_server.py", line 44, in startup_event
+    rag_system = RAGSystem()
+  File "E:\Projects\ai-chat-app - 副本 - 副本\rag_system\rag_system.py", line 22, in __init__
+    self.vectorizer = AdvancedRAGVectorizer(bi_encoder_model, cross_encoder_model)
+                      ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Projects\ai-chat-app - 副本 - 副本\rag_system\vectorizer.py", line 260, in __init__
+    self.bi_encoder = BGEVectorizer(bi_encoder_model)
+                      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "E:\Projects\ai-chat-app - 副本 - 副本\rag_system\vectorizer.py", line 62, in __init__
+    print(f"\u274c 无法加载BGE模型: {e}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'gbk' codec can't encode character '\u274c' in position 0: illegal multibyte sequence
+
+ERROR:    Application startup failed. Exiting.
+初始化RAG系统...
+forrtl: error (200): program aborting due to window-CLOSE event
+Image              PC                Routine            Line        Source             
+KERNELBASE.dll     00007FFB81D1B0CD  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFB8339E8D7  Unknown               Unknown  Unknown
+ntdll.dll          00007FFB84B3C34C  Unknown               Unknown  Unknown

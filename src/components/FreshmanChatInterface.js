@@ -4,17 +4,11 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import EmojiPicker from 'emoji-picker-react';
 import AIAvatar from './AIAvatar';
+import RAG_CONFIG from '../config/ragConfig';
 
 // 创建一个配置了基础 URL 的 axios 实例
 const getApiBaseURL = () => {
-  // 如果是开发环境，使用本地地址
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:8000';
-  }
-  // 如果是生产环境，使用部署的RAG API地址
-  // TODO: 部署完成后，请将下面的URL替换为实际的Railway域名
-  // 例如：https://your-app-name.railway.app
-  return 'https://your-rag-api.railway.app'; // 替换为实际部署地址
+  return RAG_CONFIG.getApiBaseURL();
 };
 
 const api = axios.create({

@@ -1,0 +1,72 @@
+{
+  "short_name": "重邮AI",
+  "name": "重邮AI问答系统",
+  "description": "基于DeepSeek和RAG技术的智能问答平台，为重庆邮电大学学生提供个性化学习指导和职业规划建议",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "zh-CN",
+  "categories": ["education", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot-narrow.png", 
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "开始聊天",
+      "short_name": "聊天",
+      "description": "直接进入AI聊天界面",
+      "url": "/?action=chat",
+      "icons": [
+        {
+          "src": "icon-chat.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "管理员登录",
+      "short_name": "管理",
+      "description": "管理员知识库管理",
+      "url": "/?action=admin",
+      "icons": [
+        {
+          "src": "icon-admin.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

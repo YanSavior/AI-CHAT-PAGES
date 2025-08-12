@@ -1,13 +1,26 @@
 {
-  "files": {
-    "main.css": "/static/css/main.b923cbfc.css",
-    "main.js": "/static/js/main.5879ad65.js",
-    "index.html": "/index.html",
-    "main.b923cbfc.css.map": "/static/css/main.b923cbfc.css.map",
-    "main.5879ad65.js.map": "/static/js/main.5879ad65.js.map"
-  },
-  "entrypoints": [
-    "static/css/main.b923cbfc.css",
-    "static/js/main.5879ad65.js"
-  ]
+  "version": "1.0.0",
+  "buildTime": "2025-08-12T15:22:45.903Z",
+  "assets": {
+    "css/main.458c7de0.css": {
+      "size": 30660,
+      "modified": "2025-08-12T15:22:45.761Z"
+    },
+    "css/main.458c7de0.css.map": {
+      "size": 61376,
+      "modified": "2025-08-12T15:22:45.767Z"
+    },
+    "js/main.c5f7e4b6.js": {
+      "size": 1002207,
+      "modified": "2025-08-12T15:22:45.761Z"
+    },
+    "js/main.c5f7e4b6.js.LICENSE.txt": {
+      "size": 971,
+      "modified": "2025-08-12T15:22:45.761Z"
+    },
+    "js/main.c5f7e4b6.js.map": {
+      "size": 2407048,
+      "modified": "2025-08-12T15:22:45.762Z"
+    }
+  }
 }

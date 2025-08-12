@@ -1,0 +1,51 @@
+{
+  "name": "重邮AI问答系统",
+  "version": "1.0.0",
+  "description": "基于DeepSeek和RAG技术的智能问答系统",
+  "buildTime": "2025-08-12T15:22:45.905Z",
+  "buildEnvironment": "netlify",
+  "features": [
+    "DeepSeek API 集成",
+    "混合RAG系统",
+    "用户登录认证",
+    "智能聊天界面",
+    "管理员知识库管理",
+    "文件上传处理",
+    "响应式设计",
+    "PWA支持"
+  ],
+  "requirements": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "deployment": {
+    "platform": "Netlify",
+    "buildCommand": "npm run build",
+    "publishDirectory": "build",
+    "nodeVersion": "18"
+  },
+  "apis": {
+    "deepseek": {
+      "url": "https://api.deepseek.com",
+      "required": true,
+      "description": "DeepSeek AI API for chat completions"
+    },
+    "rag": {
+      "url": "configurable",
+      "required": false,
+      "description": "RAG system for knowledge retrieval"
+    }
+  },
+  "configuration": {
+    "environmentVariables": [
+      "REACT_APP_DEEPSEEK_API_KEY",
+      "REACT_APP_DEEPSEEK_API_URL",
+      "REACT_APP_RAG_API_URL"
+    ],
+    "netlifySettings": {
+      "buildCommand": "npm run build",
+      "publishDirectory": "build",
+      "nodeVersion": "18"
+    }
+  }
+}
