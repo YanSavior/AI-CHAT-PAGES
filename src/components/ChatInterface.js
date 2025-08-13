@@ -265,8 +265,8 @@ const ChatInterface = () => {
       // 策略1: 尝试使用远程RAG API
       if (ragApiStatus === 'available') {
         try {
-          // 首先尝试远程RAG API
-          const ragResult = await ragApi.post('/api/query', {
+          // 首先尝试Netlify函数RAG API
+          const ragResult = await ragApi.post('/rag-query', {
             question: inputMessage,
             top_k_retrieve: 5,
             top_k_final: 3
