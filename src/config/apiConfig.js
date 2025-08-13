@@ -13,7 +13,7 @@ export const DEEPSEEK_CONFIG = {
   baseURL: isNetlify ? '/api/deepseek' : 'https://api.deepseek.com',
   apiKey: process.env.REACT_APP_DEEPSEEK_API_KEY || 'sk-7f5214ed15764dfea0b45c84c6d0c961',
   model: 'deepseek-chat',
-  timeout: 30000,
+  timeout: 60000, // 增加超时时间到60秒
   headers: {
     'Content-Type': 'application/json',
     'User-Agent': 'CQUPT-AI-Chat/1.0.0'

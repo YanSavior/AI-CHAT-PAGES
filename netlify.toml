@@ -15,6 +15,15 @@
   force = true
   headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization"}
 
+# DeepSeek API OPTIONS 预检请求处理
+[[redirects]]
+  from = "/api/deepseek/*"
+  to = "https://api.deepseek.com/:splat"
+  status = 200
+  force = true
+  conditions = {Method = ["OPTIONS"]}
+  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization"}
+
 # RAG API 代理 (如果需要)
 [[redirects]]
   from = "/api/rag/*"

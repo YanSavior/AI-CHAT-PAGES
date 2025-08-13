@@ -342,12 +342,22 @@ const ChatInterface = () => {
         throw new Error('无效的 API 响应格式');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('🚨 DeepSeek API调用失败详情:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
+        }
+      });
       
       // 如果API调用失败，尝试完全使用混合RAG系统
       if (hybridRagSystem) {
         try {
-          console.log('DeepSeek API调用失败，尝试使用混合RAG系统完全处理...');
+          console.log('🔄 DeepSeek API调用失败，尝试使用混合RAG系统完全处理...');
           const hybridResponse = await hybridRagSystem.query(inputMessage);
           
           const aiMessage = {
@@ -369,18 +379,14 @@ const ChatInterface = () => {
             setIsFirstMessage(false);
           }
         } catch (hybridError) {
-          console.error('混合RAG系统处理失败:', hybridError);
+          console.error('❌ 混合RAG系统处理失败:', hybridError);
           setError(
-            error.response?.data?.error?.message || 
-            error.message || 
-            '抱歉，发生了一些错误。请确保已配置正确的 API 密钥。'
+            `API调用失败: ${error.response?.status || 'Unknown'} - ${error.response?.data?.error?.message || error.message || '网络连接问题'}`
           );
         }
       } else {
         setError(
-          error.response?.data?.error?.message || 
-          error.message || 
-          '抱歉，发生了一些错误。请确保已配置正确的 API 密钥。'
+          `API调用失败: ${error.response?.status || 'Unknown'} - ${error.response?.data?.error?.message || error.message || '请检查网络连接和API配置'}`
         );
       }
     } finally {
