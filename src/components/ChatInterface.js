@@ -14,10 +14,23 @@ import globalRAGSystem from '../utils/GlobalRAGSystem';
 // 导入API配置
 import config, { validateConfig } from '../config/apiConfig';
 
+// 调试：打印环境变量和配置信息
+console.log('🔍 环境变量调试信息:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('NETLIFY:', process.env.NETLIFY);
+console.log('REACT_APP_DEEPSEEK_API_KEY:', process.env.REACT_APP_DEEPSEEK_API_KEY ? `${process.env.REACT_APP_DEEPSEEK_API_KEY.substring(0, 10)}...` : 'undefined');
+console.log('REACT_APP_DEEPSEEK_API_URL:', process.env.REACT_APP_DEEPSEEK_API_URL);
+console.log('🔧 API配置信息:');
+console.log('baseURL:', config.deepseek.baseURL);
+console.log('apiKey:', config.deepseek.apiKey ? `${config.deepseek.apiKey.substring(0, 10)}...` : 'undefined');
+console.log('timeout:', config.deepseek.timeout);
+
 // 验证配置
 const configValidation = validateConfig();
 if (!configValidation.valid) {
   console.warn('⚠️ API配置存在问题:', configValidation.errors);
+} else {
+  console.log('✅ API配置验证通过');
 }
 
 // 创建DeepSeek API客户端

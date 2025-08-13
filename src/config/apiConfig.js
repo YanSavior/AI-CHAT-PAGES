@@ -140,6 +140,16 @@ export function validateConfig() {
     errors.push('DeepSeek API Key 未配置或使用默认值');
   }
   
+  // 检查API Key格式
+  if (DEEPSEEK_CONFIG.apiKey && !DEEPSEEK_CONFIG.apiKey.startsWith('sk-')) {
+    errors.push('DeepSeek API Key 格式不正确，应该以 sk- 开头');
+  }
+  
+  // 检查API Key是否包含变量名（常见错误）
+  if (DEEPSEEK_CONFIG.apiKey && DEEPSEEK_CONFIG.apiKey.includes('REACT_APP_DEEPSEEK_API_KEY')) {
+    errors.push('DeepSeek API Key 包含变量名，请检查环境变量配置');
+  }
+  
   // 检查 API URLs
   if (!DEEPSEEK_CONFIG.baseURL) {
     errors.push('DeepSeek API URL 未配置');
