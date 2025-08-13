@@ -7,21 +7,20 @@
   NPM_VERSION = "9"
   CI = "true"
 
-# DeepSeek API 代理
+# DeepSeek API 代理 - 修复路径映射
 [[redirects]]
-  from = "/api/deepseek/*"
-  to = "https://api.deepseek.com/:splat"
+  from = "/api/deepseek/v1/*"
+  to = "https://api.deepseek.com/v1/:splat"
   status = 200
   force = true
   headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization"}
 
-# DeepSeek API OPTIONS 预检请求处理
+# DeepSeek API 根路径代理
 [[redirects]]
   from = "/api/deepseek/*"
   to = "https://api.deepseek.com/:splat"
   status = 200
   force = true
-  conditions = {Method = ["OPTIONS"]}
   headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization"}
 
 # RAG API 代理 (如果需要)
@@ -45,7 +44,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.deepseek.com"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.deepseek.com https://*.deepseek.com"
 
 # 静态资源缓存
 [[headers]]

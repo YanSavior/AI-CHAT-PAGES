@@ -9,14 +9,14 @@ const isNetlify = process.env.NETLIFY === 'true' || window.location.hostname.inc
 
 // DeepSeek API 配置
 export const DEEPSEEK_CONFIG = {
-  // 在 Netlify 上使用代理路径，本地开发使用直接 URL
-  baseURL: isNetlify ? '/api/deepseek' : 'https://api.deepseek.com',
+  // 直接使用DeepSeek API，避免Netlify代理问题
+  baseURL: 'https://api.deepseek.com',
   apiKey: process.env.REACT_APP_DEEPSEEK_API_KEY || 'sk-7f5214ed15764dfea0b45c84c6d0c961',
   model: 'deepseek-chat',
   timeout: 60000, // 增加超时时间到60秒
   headers: {
-    'Content-Type': 'application/json',
-    'User-Agent': 'CQUPT-AI-Chat/1.0.0'
+    'Content-Type': 'application/json'
+    // 移除User-Agent，因为浏览器不允许设置
   }
 };
 

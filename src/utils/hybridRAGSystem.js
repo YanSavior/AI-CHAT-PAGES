@@ -89,7 +89,7 @@ class HybridRAGSystem {
       
       console.log('[混合RAG] 调用DeepSeek API...');
       
-      const response = await axios.post('/v1/chat/completions', {
+      const response = await axios.post('https://api.deepseek.com/v1/chat/completions', {
         model: model,
         messages: [
           {
