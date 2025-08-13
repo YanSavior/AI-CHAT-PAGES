@@ -23,7 +23,7 @@ export const DEEPSEEK_CONFIG = {
 // RAG API 配置
 export const RAG_CONFIG = {
   // 优先使用环境变量，否则使用默认值
-  baseURL: process.env.REACT_APP_RAG_API_URL || (isNetlify ? '/api/rag' : 'http://localhost:8000'),
+  baseURL: process.env.REACT_APP_RAG_API_URL || 'https://your-rag-api.vercel.app',
   timeout: 15000,
   retryAttempts: 3,
   retryDelay: 1000,
