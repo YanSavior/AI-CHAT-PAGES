@@ -20,15 +20,16 @@ export const DEEPSEEK_CONFIG = {
   }
 };
 
-// RAG API 配置
+// RAGflow API 配置
 export const RAG_CONFIG = {
-  // 优先使用环境变量，否则使用默认值
-  baseURL: process.env.REACT_APP_RAG_API_URL || '/.netlify/functions',
-  timeout: 15000,
-  retryAttempts: 3,
+  // RAGflow本地部署的API地址
+  baseURL: process.env.REACT_APP_RAGFLOW_API_URL || 'http://localhost:9380',
+  timeout: 30000, // RAGflow可能需要更长时间处理
+  retryAttempts: 2,
   retryDelay: 1000,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${process.env.REACT_APP_RAGFLOW_TOKEN || ''}`
   }
 };
 

@@ -7,10 +7,8 @@ import { graduateData } from '../data/graduateData';
 import pyfaData from '../data/pyfaData.json';
 import pyfaData1 from '../data/pyfaData-1.json';
 import AIAvatar from './AIAvatar';
-// 导入混合RAG系统
-import HybridRAGSystem from '../utils/hybridRAGSystem';
-// 导入全局RAG系统
-import globalRAGSystem from '../utils/GlobalRAGSystem';
+// 导入RAGflow客户端
+import ragflowClient from '../utils/ragflowClient';
 // 导入API配置
 import config, { validateConfig } from '../config/apiConfig';
 
@@ -43,12 +41,7 @@ const api = axios.create({
   }
 });
 
-// 创建RAG API客户端
-const ragApi = axios.create({
-  baseURL: config.rag.baseURL,
-  timeout: config.rag.timeout,
-  headers: config.rag.headers
-});
+// RAGflow客户端已在ragflowClient中创建
 
 // 辅助函数：根据用户输入内容智能匹配专业
 function extractMajorFromText(text) {
@@ -106,7 +99,7 @@ function filterMermaidGantt(text) {
              .replace(/gantt\s+title[\s\S]*?(section|$)/gi, '');
 }
 
-const ChatInterface = () => {
+const ChatInterface = ({ onStatusChange }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -116,65 +109,37 @@ const ChatInterface = () => {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isAIAvatarReplying, setIsAIAvatarReplying] = useState(false);
-  const [ragApiStatus, setRagApiStatus] = useState('checking'); // 'checking', 'available', 'unavailable'
-  // 混合RAG系统状态
-  const [hybridRagSystem, setHybridRagSystem] = useState(null);
+  const [ragflowStatus, setRagflowStatus] = useState('checking'); // 'checking', 'available', 'unavailable'
+  const [conversationId, setConversationId] = useState(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const emojiPickerRef = useRef(null);
 
-  // 初始化混合RAG系统
+  // 初始化RAGflow连接
   useEffect(() => {
-    const initHybridRAG = async () => {
+    const checkRAGflowStatus = async () => {
       try {
-        console.log('初始化混合RAG系统...');
-        setRagApiStatus('checking');
+        console.log('🔍 检查RAGflow连接状态...');
+        setRagflowStatus('checking');
         
-        // 创建混合RAG系统实例
-        const hybridRAG = new HybridRAGSystem({
-          systemPrompt: SYSTEM_PROMPT,
-          topK: 3
-        });
+        const healthResponse = await ragflowClient.healthCheck();
+        console.log('✅ RAGflow连接成功:', healthResponse);
+        setRagflowStatus('available');
+        onStatusChange && onStatusChange('available');
         
-        // 初始化系统
-        await hybridRAG.initialize();
-        setHybridRagSystem(hybridRAG);
+        // 生成对话ID
+        const newConversationId = ragflowClient.generateConversationId();
+        setConversationId(newConversationId);
+        console.log('🆔 对话ID已生成:', newConversationId);
         
-        // 获取系统状态
-        const status = hybridRAG.getStatus();
-        if (status.localRAG.hasDocuments) {
-          setRagApiStatus('available');
-          console.log('✅ 混合RAG系统已就绪');
-        } else {
-          setRagApiStatus('unavailable');
-          console.log('❌ 混合RAG系统初始化失败：没有加载到文档');
-        }
       } catch (error) {
-        console.error('❌ 混合RAG系统初始化失败:', error);
-        setRagApiStatus('unavailable');
+        console.error('❌ RAGflow连接失败:', error);
+        setRagflowStatus('unavailable');
+        onStatusChange && onStatusChange('unavailable');
       }
     };
     
-    // 同时检查远程RAG API和初始化本地混合RAG系统
-    const checkRagApiStatus = async () => {
-      try {
-        console.log('检查RAG API状态...');
-        const response = await ragApi.get('/api/health');
-        if (response.data && response.data.status === 'healthy') {
-          setRagApiStatus('available');
-          console.log('✅ RAG API可用');
-        } else {
-          // 如果远程API不可用，启用本地混合RAG系统
-          initHybridRAG();
-        }
-      } catch (error) {
-        console.log('❌ RAG API不可用，将使用本地混合RAG系统');
-        // 启用本地混合RAG系统
-        initHybridRAG();
-      }
-    };
-    
-    checkRagApiStatus();
+    checkRAGflowStatus();
   }, []);
 
   const scrollToBottom = () => {
@@ -244,115 +209,127 @@ const ChatInterface = () => {
     if (!lastUserMajor && userMajor) setLastUserMajor(userMajor);
 
     try {
-      // 使用RAG获取相关知识
+      // 使用RAGflow获取相关知识和回答
+      let ragflowResponse = null;
       let ragContext = '';
-      let globalRagContext = '';
       
-      // 首先总是查询全局RAG系统（包含用户自定义知识）
-      try {
-        console.log('🌐 查询全局RAG系统...');
-        const globalResult = await globalRAGSystem.query(inputMessage, 3);
-        if (globalResult.relevant_docs && globalResult.relevant_docs.length > 0) {
-          globalRagContext = `\n\n用户自定义知识库信息：\n${globalResult.relevant_docs.join('\n\n')}`;
-          console.log('✅ 全局RAG系统查询结果:', globalResult);
-        } else {
-          console.log('🔍 全局RAG系统未找到相关结果');
-        }
-      } catch (globalError) {
-        console.log('❌ 全局RAG系统查询失败:', globalError.message);
-      }
-      
-      // 策略1: 尝试使用远程RAG API
-      if (ragApiStatus === 'available') {
+      if (ragflowStatus === 'available') {
         try {
-          // 首先尝试Netlify函数RAG API
-          const ragResult = await ragApi.post('/rag-query', {
-            question: inputMessage,
-            top_k_retrieve: 5,
-            top_k_final: 3
+          console.log('🚀 调用RAGflow API...');
+          ragflowResponse = await ragflowClient.query(inputMessage, {
+            conversationId: conversationId,
+            includeQuote: true
           });
           
-          if (ragResult.data && ragResult.data.relevant_docs && ragResult.data.relevant_docs.length > 0) {
-            ragContext = `\n\n相关专业知识库信息：\n${ragResult.data.relevant_docs.join('\n\n')}`;
-            console.log('RAG API查询结果:', ragResult.data);
-          }
-        } catch (ragError) {
-          console.log('远程RAG API查询失败，尝试使用本地混合RAG系统:', ragError.message);
+          console.log('✅ RAGflow查询成功:', ragflowResponse);
           
-          // 策略2: 如果远程API失败，尝试使用本地混合RAG系统
-          if (hybridRagSystem) {
-            try {
-              const hybridResult = await hybridRagSystem.localRAG.query(inputMessage, 3);
-              if (hybridResult.relevant_docs && hybridResult.relevant_docs.length > 0) {
-                ragContext = `\n\n相关专业知识库信息：\n${hybridResult.relevant_docs.join('\n\n')}`;
-                console.log('本地混合RAG系统查询结果:', hybridResult);
-              }
-            } catch (hybridError) {
-              console.log('本地混合RAG系统查询失败:', hybridError.message);
-            }
+          // 提取相关文档用于DeepSeek上下文
+          if (ragflowResponse.relevant_docs && ragflowResponse.relevant_docs.length > 0) {
+            ragContext = `\n\n相关知识库信息：\n${ragflowResponse.relevant_docs.join('\n\n')}`;
           }
+          
+        } catch (ragflowError) {
+          console.error('❌ RAGflow查询失败:', ragflowError);
+          ragContext = '\n\n注意：知识库查询失败，将基于通用知识回答。';
         }
-      } else if (hybridRagSystem) {
-        // 如果远程API不可用，直接使用本地混合RAG系统
-        try {
-          const hybridResult = await hybridRagSystem.localRAG.query(inputMessage, 3);
-          if (hybridResult.relevant_docs && hybridResult.relevant_docs.length > 0) {
-            ragContext = `\n\n相关专业知识库信息：\n${hybridResult.relevant_docs.join('\n\n')}`;
-            console.log('本地混合RAG系统查询结果:', hybridResult);
-          }
-        } catch (hybridError) {
-          console.log('本地混合RAG系统查询失败:', hybridError.message);
+      } else {
+        ragContext = '\n\n注意：RAGflow未连接，将基于通用知识回答。';
+      }
+
+      // 如果RAGflow返回了完整回答，直接使用；否则调用DeepSeek API增强回答
+      let finalAnswer = '';
+      
+      if (ragflowResponse && ragflowResponse.answer && ragflowResponse.answer.trim()) {
+        // RAGflow已经提供了完整回答，可以直接使用或进一步增强
+        console.log('📝 使用RAGflow的回答作为基础');
+        
+        // 可选：使用DeepSeek进一步优化RAGflow的回答
+        const enhanceResponse = await api.post('/v1/chat/completions', {
+          model: 'deepseek-chat',
+          messages: [
+            {
+              role: 'system',
+              content: `你是一个专业的AI助手。用户提出了一个问题，RAG系统已经提供了相关信息和初步回答。请基于这些信息，提供一个更完善、更有条理的回答。
+
+RAG系统的回答：${ragflowResponse.answer}
+
+相关参考资料：${ragContext}
+
+请注意：
+1. 保持回答的准确性，基于提供的信息
+2. 让回答更有条理和易懂
+3. 如果需要，可以适当补充解释
+4. 保持温暖、专业的语气`
+            },
+            {
+              role: 'user',
+              content: inputMessage
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000
+        });
+        
+        if (enhanceResponse.data && enhanceResponse.data.choices && enhanceResponse.data.choices[0]) {
+          finalAnswer = enhanceResponse.data.choices[0].message.content;
+        } else {
+          finalAnswer = ragflowResponse.answer;
+        }
+        
+      } else {
+        // RAGflow没有提供回答，使用DeepSeek生成回答
+        console.log('🤖 使用DeepSeek生成回答');
+        
+        const response = await api.post('/v1/chat/completions', {
+          model: 'deepseek-chat',
+          messages: [
+            {
+              role: 'system',
+              content: `${SYSTEM_PROMPT}\n\n可用的毕业生数据如下：${JSON.stringify(graduateData, null, 2)}\n\n${userMajor ? `该用户专业为：${userMajor}，以下是该专业的培养方案内容：\n${pyfaText}` : ''}${ragContext}`
+            },
+            ...messages.map(msg => ({
+              role: msg.sender === 'user' ? 'user' : 'assistant',
+              content: msg.text
+            })),
+            {
+              role: 'user',
+              content: inputMessage
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 3000,
+          top_p: 0.9,
+          frequency_penalty: 0.3,
+          presence_penalty: 0.3
+        });
+        
+        if (response.data && response.data.choices && response.data.choices[0]) {
+          finalAnswer = response.data.choices[0].message.content;
+        } else {
+          throw new Error('无效的 API 响应格式');
         }
       }
 
-      // 合并所有RAG查询结果
-      const finalRagContext = globalRagContext + ragContext;
-
-      // 调用DeepSeek API生成回答
-      const response = await api.post('/v1/chat/completions', {
-        model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: `${SYSTEM_PROMPT}\n\n可用的毕业生数据如下：${JSON.stringify(graduateData, null, 2)}\n\n${userMajor ? `该用户专业为：${userMajor}，以下是该专业的培养方案内容：\n${pyfaText}` : ''}${finalRagContext}`
-          },
-          ...messages.map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'assistant',
-            content: msg.text
-          })),
-          {
-            role: 'user',
-            content: inputMessage
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 3000,
-        top_p: 0.9,
-        frequency_penalty: 0.3,
-        presence_penalty: 0.3
+      // 创建AI回复消息
+      const aiMessage = {
+        id: Date.now() + 1,
+        text: finalAnswer,
+        sender: 'ai',
+        time: formatTime(),
+        ragflowData: ragflowResponse // 保存RAGflow的原始数据用于调试
+      };
+      
+      // 触发AI智能体的恍然大悟状态
+      setIsAIAvatarReplying(true);
+      
+      setMessages(prev => {
+        const aiText = filterMermaidGantt(aiMessage.text || '').trim();
+        if (!aiText) return prev; // 内容为空则不插入
+        return [...prev, { ...aiMessage, text: aiText }];
       });
-
-      if (response.data && response.data.choices && response.data.choices[0]) {
-        const aiMessage = {
-          id: Date.now() + 1,
-          text: response.data.choices[0].message.content,
-          sender: 'ai',
-          time: formatTime()
-        };
-        
-        // 触发AI智能体的恍然大悟状态
-        setIsAIAvatarReplying(true);
-        
-        setMessages(prev => {
-          const aiText = filterMermaidGantt(aiMessage.text || '').trim();
-          if (!aiText) return prev; // 内容为空则不插入
-          return [...prev, { ...aiMessage, text: aiText }];
-        });
-        if (isFirstMessage) {
-          setIsFirstMessage(false);
-        }
-      } else {
-        throw new Error('无效的 API 响应格式');
+      
+      if (isFirstMessage) {
+        setIsFirstMessage(false);
       }
     } catch (error) {
       console.error('🚨 DeepSeek API调用失败详情:', {

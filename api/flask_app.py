@@ -1,30 +1,8 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional
-import json
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
-app = FastAPI(title="RAG API", version="1.0.0")
-
-# CORS配置
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-class QueryRequest(BaseModel):
-    question: str
-    top_k_retrieve: Optional[int] = 20
-    top_k_final: Optional[int] = 5
-
-class QueryResponse(BaseModel):
-    question: str
-    answer: str
-    relevant_docs: List[str]
-    scores: List[float]
+app = Flask(__name__)
+CORS(app)
 
 # 简单的知识库
 KNOWLEDGE_BASE = [
@@ -36,18 +14,20 @@ KNOWLEDGE_BASE = [
     "心理调节能力对应对工作压力很重要，建议培养兴趣爱好"
 ]
 
-@app.get("/")
+@app.route('/')
 def root():
-    return {"message": "RAG API服务", "status": "running"}
+    return jsonify({"message": "RAG API服务", "status": "running"})
 
-@app.get("/api/health")
+@app.route('/api/health')
 def health_check():
-    return {"status": "healthy", "message": "API服务正常运行"}
+    return jsonify({"status": "healthy", "message": "API服务正常运行"})
 
-@app.post("/api/query")
-def query(request: QueryRequest):
+@app.route('/api/query', methods=['POST'])
+def query():
     try:
-        question = request.question.lower()
+        data = request.get_json()
+        question = data.get('question', '').lower()
+        top_k_final = data.get('top_k_final', 3)
         
         # 简单的关键词匹配
         relevant_docs = []
@@ -68,22 +48,22 @@ def query(request: QueryRequest):
         if relevant_docs:
             paired = list(zip(relevant_docs, scores))
             paired.sort(key=lambda x: x[1], reverse=True)
-            relevant_docs = [doc for doc, _ in paired[:request.top_k_final]]
-            scores = [score for _, score in paired[:request.top_k_final]]
+            relevant_docs = [doc for doc, _ in paired[:top_k_final]]
+            scores = [score for _, score in paired[:top_k_final]]
         else:
             relevant_docs = ["抱歉，没有找到相关信息"]
             scores = [0.0]
         
-        return {
-            "question": request.question,
+        return jsonify({
+            "question": data.get('question', ''),
             "answer": f"基于知识库检索到 {len(relevant_docs)} 条相关信息",
             "relevant_docs": relevant_docs,
             "scores": scores
-        }
+        })
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+        return jsonify({"error": f"查询失败: {str(e)}"}), 500
 
 # Vercel处理器
 def handler(event, context):
-    return app 
+    return app
