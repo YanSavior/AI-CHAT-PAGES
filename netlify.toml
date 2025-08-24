@@ -24,6 +24,13 @@
   force = true
   headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization"}
 
+# Dify API 代理
+[[redirects]]
+  from = "/api/dify-proxy"
+  to = "/.netlify/functions/dify-proxy"
+  status = 200
+  force = true
+
 # RAG API 代理 (如果需要)
 [[redirects]]
   from = "/api/rag/*"

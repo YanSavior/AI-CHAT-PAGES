@@ -16,6 +16,8 @@ class DifyRAG {
       console.log('🔗 使用 Dify 代理客户端');
       this.difyClient = new DifyProxyClient({
         proxyUrl: process.env.REACT_APP_PROXY_URL || '/api/dify-proxy',
+        apiKey: options.difyApiKey || 'dataset-AdiXWdxe8pPYcQX3cu20arf7',
+        datasetId: options.datasetId || '4b03f4127e3011f0a2a51a264d04a702',
         timeout: options.timeout || 30000
       });
     } else {
@@ -23,6 +25,7 @@ class DifyRAG {
       this.difyClient = new DifyClient({
         apiKey: options.difyApiKey || 'dataset-AdiXWdxe8pPYcQX3cu20arf7',
         baseURL: options.difyBaseURL || 'https://api.dify.ai/v1',
+        datasetId: options.datasetId || '4b03f4127e3011f0a2a51a264d04a702',
         timeout: options.timeout || 30000
       });
     }

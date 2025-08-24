@@ -1,26 +1,26 @@
 {
   "version": "1.0.0",
-  "buildTime": "2025-08-24T02:16:45.908Z",
+  "buildTime": "2025-08-24T02:34:43.697Z",
   "assets": {
     "css/main.92e840a0.css": {
       "size": 67262,
-      "modified": "2025-08-24T02:16:45.760Z"
+      "modified": "2025-08-24T02:34:43.548Z"
     },
     "css/main.92e840a0.css.map": {
       "size": 135109,
-      "modified": "2025-08-24T02:16:45.760Z"
+      "modified": "2025-08-24T02:34:43.549Z"
     },
-    "js/main.9e5cce99.js": {
-      "size": 966977,
-      "modified": "2025-08-24T02:16:45.761Z"
+    "js/main.e127cb1c.js": {
+      "size": 967974,
+      "modified": "2025-08-24T02:34:43.548Z"
     },
-    "js/main.9e5cce99.js.LICENSE.txt": {
+    "js/main.e127cb1c.js.LICENSE.txt": {
       "size": 971,
-      "modified": "2025-08-24T02:16:45.760Z"
+      "modified": "2025-08-24T02:34:43.548Z"
     },
-    "js/main.9e5cce99.js.map": {
-      "size": 2323015,
-      "modified": "2025-08-24T02:16:45.761Z"
+    "js/main.e127cb1c.js.map": {
+      "size": 2323944,
+      "modified": "2025-08-24T02:34:43.549Z"
     }
   }
 }

@@ -14,6 +14,7 @@ class DifyAdapter {
     this.ragSystem = new DifyRAG({
       difyApiKey: RAG_CONFIG.DIFY?.API_KEY || 'dataset-AdiXWdxe8pPYcQX3cu20arf7',
       difyBaseURL: RAG_CONFIG.DIFY?.BASE_URL || 'https://api.dify.ai/v1',
+      datasetId: RAG_CONFIG.DIFY?.DATASET_ID || '4b03f4127e3011f0a2a51a264d04a702',
       timeout: RAG_CONFIG.DIFY?.TIMEOUT || 30000
     });
     

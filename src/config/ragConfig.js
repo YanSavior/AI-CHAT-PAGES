@@ -55,6 +55,7 @@ export const RAG_CONFIG = {
     ENABLED: true, // 始终启用，后端代理处理 API Key
     API_KEY: process.env.REACT_APP_DIFY_API_KEY || 'dataset-AdiXWdxe8pPYcQX3cu20arf7',
     BASE_URL: process.env.REACT_APP_DIFY_BASE_URL || 'https://api.dify.ai/v1',
+    DATASET_ID: process.env.REACT_APP_DIFY_DATASET_ID || '4b03f4127e3011f0a2a51a264d04a702',
     TIMEOUT: 30000, // 30秒超时
     
     // Dify特定配置
