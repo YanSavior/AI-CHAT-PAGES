@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAGflow 连接测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .result { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 10px 20px; margin: 10px 5px; font-size: 16px; cursor: pointer; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>RAGflow 连接测试</h1>
+    
+    <div class="info">
+        <h3>配置信息：</h3>
+        <p><strong>RAGflow地址：</strong> http://localhost:80</p>
+        <p><strong>API密钥：</strong> ragflow-k1N2ZmYjRhN2UzNDExZjA4OGQ3ZjJkMm</p>
+        <p><strong>数据集ID：</strong> 4b03f4127e3011f0a2a51a264d04a702</p>
+    </div>
+
+    <div>
+        <button onclick="testHealth()">测试连接状态</button>
+        <button onclick="testDatasets()">获取数据集列表</button>
+        <button onclick="testRetrieval()">测试检索功能</button>
+        <button onclick="clearResults()">清除结果</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const RAGFLOW_CONFIG = {
+            baseURL: 'http://localhost:80',
+            apiKey: 'ragflow-k1N2ZmYjRhN2UzNDExZjA4OGQ3ZjJkMm',
+            datasetId: '4b03f4127e3011f0a2a51a264d04a702'
+        };
+
+        function addResult(type, title, content) {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `
+                <h3>${title}</h3>
+                <pre>${typeof content === 'object' ? JSON.stringify(content, null, 2) : content}</pre>
+            `;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function makeRequest(endpoint, options = {}) {
+            const url = `${RAGFLOW_CONFIG.baseURL}${endpoint}`;
+            console.log('请求URL:', url);
+            
+            try {
+                const response = await fetch(url, {
+                    method: options.method || 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${RAGFLOW_CONFIG.apiKey}`,
+                        ...options.headers
+                    },
+                    body: options.body ? JSON.stringify(options.body) : undefined
+                });
+
+                console.log('响应状态:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return { success: true, data };
+            } catch (error) {
+                console.error('请求错误:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function testHealth() {
+            addResult('info', '正在测试连接...', '检查RAGflow服务是否可用');
+            
+            const result = await makeRequest('/api/v1/datasets', {
+                method: 'GET'
+            });
+
+            if (result.success) {
+                addResult('success', '✅ 连接成功！', {
+                    message: 'RAGflow服务运行正常',
+                    datasetCount: result.data.data ? result.data.data.length : 0,
+                    response: result.data
+                });
+            } else {
+                addResult('error', '❌ 连接失败', {
+                    error: result.error,
+                    troubleshooting: [
+                        '1. 确认RAGflow服务已启动',
+                        '2. 确认地址 http://localhost:80 可访问',
+                        '3. 检查API密钥是否正确',
+                        '4. 检查浏览器CORS设置'
+                    ]
+                });
+            }
+        }
+
+        async function testDatasets() {
+            addResult('info', '正在获取数据集列表...', '查询所有可用的知识库');
+            
+            const result = await makeRequest('/api/v1/datasets');
+
+            if (result.success) {
+                const datasets = result.data.data || [];
+                const targetDataset = datasets.find(ds => ds.id === RAGFLOW_CONFIG.datasetId);
+                
+                addResult('success', '✅ 数据集列表获取成功！', {
+                    totalDatasets: datasets.length,
+                    targetDatasetFound: !!targetDataset,
+                    targetDataset: targetDataset || '未找到目标数据集',
+                    allDatasets: datasets.map(ds => ({
+                        id: ds.id,
+                        name: ds.name,
+                        description: ds.description,
+                        documentCount: ds.document_count,
+                        chunkCount: ds.chunk_count
+                    }))
+                });
+            } else {
+                addResult('error', '❌ 获取数据集失败', result.error);
+            }
+        }
+
+        async function testRetrieval() {
+            addResult('info', '正在测试检索功能...', '使用测试问题检索相关文档');
+            
+            const testQuestion = '微电子专业的就业前景如何？';
+            
+            const result = await makeRequest('/api/v1/retrieval', {
+                method: 'POST',
+                body: {
+                    question: testQuestion,
+                    dataset_ids: [RAGFLOW_CONFIG.datasetId],
+                    page: 1,
+                    page_size: 5,
+                    similarity_threshold: 0.2,
+                    vector_similarity_weight: 0.3,
+                    top_k: 5
+                }
+            });
+
+            if (result.success) {
+                const chunks = result.data.data?.chunks || [];
+                addResult('success', '✅ 检索测试成功！', {
+                    question: testQuestion,
+                    foundChunks: chunks.length,
+                    chunks: chunks.map(chunk => ({
+                        content: chunk.content?.substring(0, 200) + '...',
+                        similarity: chunk.similarity,
+                        documentName: chunk.document_name
+                    }))
+                });
+            } else {
+                addResult('error', '❌ 检索测试失败', {
+                    error: result.error,
+                    possibleCauses: [
+                        '1. 数据集ID不正确',
+                        '2. 数据集中没有文档',
+                        '3. 文档还未解析完成',
+                        '4. 检索参数设置问题'
+                    ]
+                });
+            }
+        }
+
+        // 页面加载完成后自动测试连接
+        window.onload = function() {
+            addResult('info', '页面已加载', '点击按钮开始测试RAGflow连接');
+        };
+    </script>
+</body>
+</html> 

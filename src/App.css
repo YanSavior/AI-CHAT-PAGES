@@ -1498,3 +1498,208 @@ html, body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* 模式选择器样式 */
+.mode-selector-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.mode-selector {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.mode-selector h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 2em;
+}
+
+.mode-selector p {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 1.1em;
+}
+
+.mode-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.mode-option {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  padding: 30px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.mode-option:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+}
+
+.mode-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+}
+
+.mode-option h3 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.3em;
+}
+
+.mode-option p {
+  color: #666;
+  margin-bottom: 15px;
+  font-size: 0.95em;
+}
+
+.mode-option ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.mode-option li {
+  color: #555;
+  padding: 5px 0;
+  font-size: 0.9em;
+}
+
+.mode-option li:before {
+  content: "✓ ";
+  color: #28a745;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.back-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* 模式切换器样式 */
+.chat-interface-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-switcher {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.switch-mode-button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.switch-mode-button:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.current-mode {
+  color: #666;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+/* RAG状态指示器样式 */
+.rag-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+/* 消息来源样式 */
+.message-sources {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #1890ff;
+}
+
+.sources-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #1890ff;
+  font-size: 0.9em;
+}
+
+.source-item {
+  font-size: 0.85em;
+  color: #666;
+  padding: 2px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.source-item:last-child {
+  border-bottom: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .mode-options {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .mode-selector {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .mode-switcher {
+    padding: 8px 15px;
+  }
+  
+  .mode-option {
+    padding: 20px 15px;
+  }
+}

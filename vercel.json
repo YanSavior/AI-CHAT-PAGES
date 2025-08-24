@@ -1,1 +1,28 @@
-{} 
+{
+  "name": "ai-chat-app",
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    },
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/api/dify-proxy", "dest": "/api/dify-proxy.js" },
+    { "src": "/static/(.*)", "headers": { "cache-control": "s-maxage=31536000,immutable" }, "dest": "/static/$1" },
+    { "src": "/(.*\\.(js|css|ico))", "headers": { "cache-control": "s-maxage=31536000,immutable" }, "dest": "/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "env": {
+    "REACT_APP_ENV": "production",
+    "REACT_APP_USE_PROXY": "true",
+    "REACT_APP_PROXY_URL": "/api/dify-proxy"
+  }
+} 

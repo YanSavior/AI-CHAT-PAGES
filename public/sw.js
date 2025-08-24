@@ -9,13 +9,8 @@ const DYNAMIC_CACHE = 'cqupt-ai-dynamic-v1.0.0';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json',
-  '/favicon.ico',
-  '/logo192.png',
-  '/logo512.png'
+  '/'
+  // 暂时不缓存任何静态资源，避免404错误
 ];
 
 // 需要缓存的数据文件

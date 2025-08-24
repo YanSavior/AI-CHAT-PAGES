@@ -2,7 +2,7 @@
   "name": "重邮AI问答系统",
   "version": "1.0.0",
   "description": "基于DeepSeek和RAG技术的智能问答系统",
-  "buildTime": "2025-08-12T15:22:45.905Z",
+  "buildTime": "2025-08-24T02:16:45.916Z",
   "buildEnvironment": "netlify",
   "features": [
     "DeepSeek API 集成",

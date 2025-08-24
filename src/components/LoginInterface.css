@@ -1,0 +1,763 @@
+/* 登录界面容器 */
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  /* 更现代的渐变背景，契合图片色调 */
+  background: linear-gradient(135deg, 
+    #1e3c72 0%, 
+    #2a5298 25%, 
+    #667eea 50%, 
+    #764ba2 75%, 
+    #8e44ad 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 增强的背景动态效果 */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 15% 85%, rgba(30, 60, 114, 0.4) 0%, transparent 60%),
+    radial-gradient(circle at 85% 15%, rgba(134, 68, 173, 0.4) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 70%),
+    radial-gradient(circle at 25% 25%, rgba(118, 75, 162, 0.3) 0%, transparent 50%);
+  animation: backgroundFloat 8s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundFloat {
+  0% {
+    transform: translateX(-15px) translateY(-15px) rotate(0deg);
+  }
+  100% {
+    transform: translateX(15px) translateY(15px) rotate(2deg);
+  }
+}
+
+/* 左上角校徽和学校名称 */
+.university-header {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 15px 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: headerSlideIn 1s ease-out 0.2s both;
+}
+
+@keyframes headerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+.university-logo img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: logoRotate 3s ease-in-out infinite;
+}
+
+@keyframes logoRotate {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(5deg) scale(1.05);
+  }
+}
+
+.university-info h1 {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+}
+
+.university-info p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  margin: 2px 0 0 0;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+/* 增强的粒子效果 */
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: floatEnhanced 8s ease-in-out infinite;
+}
+
+.particle:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.particle:nth-child(even) {
+  background: rgba(134, 68, 173, 0.5);
+  box-shadow: 0 0 8px rgba(134, 68, 173, 0.4);
+}
+
+/* 扩展粒子位置 */
+.particle-1 { width: 4px; height: 4px; top: 20%; left: 10%; animation-delay: 0s; }
+.particle-2 { width: 6px; height: 6px; top: 60%; left: 20%; animation-delay: 1s; }
+.particle-3 { width: 3px; height: 3px; top: 40%; left: 80%; animation-delay: 2s; }
+.particle-4 { width: 5px; height: 5px; top: 80%; left: 70%; animation-delay: 3s; }
+.particle-5 { width: 4px; height: 4px; top: 30%; left: 90%; animation-delay: 4s; }
+.particle-6 { width: 7px; height: 7px; top: 70%; left: 5%; animation-delay: 0.5s; }
+.particle-7 { width: 3px; height: 3px; top: 10%; left: 60%; animation-delay: 1.5s; }
+.particle-8 { width: 5px; height: 5px; top: 90%; left: 40%; animation-delay: 2.5s; }
+.particle-9 { width: 4px; height: 4px; top: 50%; left: 15%; animation-delay: 3.5s; }
+.particle-10 { width: 6px; height: 6px; top: 25%; left: 75%; animation-delay: 4.5s; }
+.particle-11 { width: 3px; height: 3px; top: 75%; left: 85%; animation-delay: 0.8s; }
+.particle-12 { width: 5px; height: 5px; top: 15%; left: 30%; animation-delay: 1.8s; }
+.particle-13 { width: 4px; height: 4px; top: 85%; left: 60%; animation-delay: 2.8s; }
+.particle-14 { width: 6px; height: 6px; top: 35%; left: 5%; animation-delay: 3.8s; }
+.particle-15 { width: 3px; height: 3px; top: 65%; left: 95%; animation-delay: 4.8s; }
+.particle-16 { width: 5px; height: 5px; top: 5%; left: 50%; animation-delay: 1.2s; }
+.particle-17 { width: 4px; height: 4px; top: 95%; left: 25%; animation-delay: 2.2s; }
+.particle-18 { width: 7px; height: 7px; top: 45%; left: 35%; animation-delay: 3.2s; }
+.particle-19 { width: 3px; height: 3px; top: 55%; left: 65%; animation-delay: 4.2s; }
+.particle-20 { width: 5px; height: 5px; top: 25%; left: 45%; animation-delay: 0.3s; }
+.particle-21 { width: 4px; height: 4px; top: 18%; left: 88%; animation-delay: 1.1s; }
+.particle-22 { width: 6px; height: 6px; top: 78%; left: 12%; animation-delay: 2.1s; }
+.particle-23 { width: 3px; height: 3px; top: 38%; left: 68%; animation-delay: 3.1s; }
+.particle-24 { width: 5px; height: 5px; top: 88%; left: 38%; animation-delay: 4.1s; }
+.particle-25 { width: 4px; height: 4px; top: 58%; left: 78%; animation-delay: 0.7s; }
+
+@keyframes floatEnhanced {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-15px) translateX(5px) rotate(90deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-25px) translateX(-5px) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-10px) translateX(10px) rotate(270deg);
+    opacity: 1;
+  }
+}
+
+/* 雾气效果 */
+.fog-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fog {
+  position: absolute;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 70%);
+  border-radius: 50%;
+  animation: fogFloat 12s ease-in-out infinite;
+}
+
+.fog-1 {
+  width: 300px;
+  height: 200px;
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+}
+
+.fog-2 {
+  width: 250px;
+  height: 180px;
+  top: 60%;
+  right: 10%;
+  animation-delay: 3s;
+}
+
+.fog-3 {
+  width: 200px;
+  height: 150px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 6s;
+}
+
+.fog-4 {
+  width: 350px;
+  height: 220px;
+  top: 30%;
+  right: 15%;
+  animation-delay: 9s;
+}
+
+@keyframes fogFloat {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateX(20px) translateY(-15px) scale(1.1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-10px) translateY(-25px) scale(0.9);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateX(15px) translateY(10px) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+/* 图片组容器 - 调整为更长更细 */
+.image-group {
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  width: 520px;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-group {
+  margin-right: 60px;
+}
+
+.right-group {
+  margin-left: 60px;
+}
+
+/* 图片容器 */
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 图片项容器 - 更长更细的尺寸，适当放大 */
+.image-item {
+  width: 110px;  /* 从90px增加到110px */
+  height: 280px; /* 从220px增加到280px */
+  transform: translateY(-100vh);
+  opacity: 0;
+  transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.4),
+    0 5px 15px rgba(0, 0, 0, 0.2);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f0f0f0;
+  position: relative;
+  border-radius: 8px;
+  /* 更精细的平行四边形效果 */
+  clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
+}
+
+/* 图片周围的雾气叠加层 */
+.image-fog-overlay {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(134, 68, 173, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(102, 126, 234, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  animation: fogOverlay 6s ease-in-out infinite;
+}
+
+@keyframes fogOverlay {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* 图片加载失败时的备用样式 */
+.image-item.image-error {
+  background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+}
+
+.image-item.image-error::after {
+  content: '🏫';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  opacity: 0.4;
+}
+
+/* 不同方向的平行四边形效果 */
+.image-item:nth-child(odd) {
+  transform: translateY(-100vh);
+  clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
+}
+
+.image-item:nth-child(even) {
+  transform: translateY(-100vh);
+  clip-path: polygon(0% 0%, 88% 0%, 100% 100%, 12% 100%);
+}
+
+/* 图片悬停效果 */
+.image-item:hover {
+  transform: translateY(0) scale(1.08) !important;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.image-container:hover .image-fog-overlay {
+  opacity: 1;
+}
+
+/* 动画类 */
+.slide-down {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+.slide-up {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+/* 中间图片从下往上的动画 */
+.center-image {
+  transform: translateY(100vh) !important;
+}
+
+.center-image.slide-up {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+/* 保持平行四边形形状在动画中 */
+.slide-down:nth-child(odd) {
+  transform: translateY(0) !important;
+  clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
+}
+
+.slide-down:nth-child(even) {
+  transform: translateY(0) !important;
+  clip-path: polygon(0% 0%, 88% 0%, 100% 100%, 12% 100%);
+}
+
+.slide-up:nth-child(odd) {
+  transform: translateY(0) !important;
+  clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
+}
+
+.slide-up:nth-child(even) {
+  transform: translateY(0) !important;
+  clip-path: polygon(0% 0%, 88% 0%, 100% 100%, 12% 100%);
+}
+
+/* 动画延迟 */
+.left-image {
+  transition-delay: 0.3s;
+}
+
+.center-image {
+  transition-delay: 0.7s;
+}
+
+.right-image {
+  transition-delay: 1.1s;
+}
+
+/* 右侧图片延迟稍微不同，创造交错效果 */
+.right-group .left-image {
+  transition-delay: 0.5s;
+}
+
+.right-group .center-image {
+  transition-delay: 0.9s;
+}
+
+.right-group .right-image {
+  transition-delay: 1.3s;
+}
+
+/* 登录表单容器 */
+.login-form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 45px;
+  width: 420px;
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.3),
+    0 10px 30px rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: formSlideIn 1.2s ease-out 0.6s both;
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 登录头部 */
+.login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.login-header h2 {
+  color: #333;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #1e3c72, #2a5298, #667eea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-header p {
+  color: #666;
+  font-size: 15px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* 输入组 */
+.input-group {
+  margin-bottom: 28px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+  transform: translateY(-1px);
+}
+
+.input-group input::placeholder {
+  color: #aaa;
+}
+
+/* 登录按钮 */
+.login-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+}
+
+.login-button:hover::before {
+  left: 100%;
+}
+
+.login-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(30, 60, 114, 0.4);
+}
+
+.login-button:active {
+  transform: translateY(-1px);
+}
+
+/* 错误弹窗覆盖层 */
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 错误弹窗 */
+.error-modal {
+  background: white;
+  border-radius: 25px;
+  padding: 0;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+  animation: modalSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.error-content {
+  padding: 35px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 52px;
+  margin-bottom: 20px;
+  animation: bounce 0.8s ease;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-12px);
+  }
+  60% {
+    transform: translateY(-6px);
+  }
+}
+
+.error-content h3 {
+  color: #e74c3c;
+  font-size: 22px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.error-content p {
+  color: #666;
+  font-size: 17px;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.error-close-btn {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  border: none;
+  padding: 14px 35px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.error-close-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+}
+
+/* 响应式设计 */
+@media (max-width: 1400px) {
+  .image-group {
+    width: 460px;
+    gap: 15px;
+  }
+  
+  .image-item {
+    width: 100px;
+    height: 260px;
+  }
+  
+  .left-group {
+    margin-right: 50px;
+  }
+  
+  .right-group {
+    margin-left: 50px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .university-header {
+    top: 20px;
+    left: 20px;
+    padding: 12px 20px;
+  }
+  
+  .university-info h1 {
+    font-size: 18px;
+  }
+  
+  .university-info p {
+    font-size: 11px;
+  }
+  
+  .image-group {
+    width: 380px;
+    gap: 12px;
+  }
+  
+  .image-item {
+    width: 85px;
+    height: 220px;
+  }
+  
+  .left-group {
+    margin-right: 40px;
+  }
+  
+  .right-group {
+    margin-left: 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .university-header {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 20px;
+  }
+  
+  .image-group {
+    display: none;
+  }
+  
+  .login-form {
+    width: 90%;
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 480px) {
+  .university-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .login-form {
+    padding: 35px 25px;
+  }
+  
+  .login-header h2 {
+    font-size: 26px;
+  }
+  
+  .error-modal {
+    margin: 20px;
+  }
+}

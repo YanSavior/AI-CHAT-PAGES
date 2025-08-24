@@ -1,26 +1,26 @@
 {
   "version": "1.0.0",
-  "buildTime": "2025-08-12T15:22:45.903Z",
+  "buildTime": "2025-08-24T02:16:45.908Z",
   "assets": {
-    "css/main.458c7de0.css": {
-      "size": 30660,
-      "modified": "2025-08-12T15:22:45.761Z"
+    "css/main.92e840a0.css": {
+      "size": 67262,
+      "modified": "2025-08-24T02:16:45.760Z"
     },
-    "css/main.458c7de0.css.map": {
-      "size": 61376,
-      "modified": "2025-08-12T15:22:45.767Z"
+    "css/main.92e840a0.css.map": {
+      "size": 135109,
+      "modified": "2025-08-24T02:16:45.760Z"
     },
-    "js/main.c5f7e4b6.js": {
-      "size": 1002207,
-      "modified": "2025-08-12T15:22:45.761Z"
+    "js/main.9e5cce99.js": {
+      "size": 966977,
+      "modified": "2025-08-24T02:16:45.761Z"
     },
-    "js/main.c5f7e4b6.js.LICENSE.txt": {
+    "js/main.9e5cce99.js.LICENSE.txt": {
       "size": 971,
-      "modified": "2025-08-12T15:22:45.761Z"
+      "modified": "2025-08-24T02:16:45.760Z"
     },
-    "js/main.c5f7e4b6.js.map": {
-      "size": 2407048,
-      "modified": "2025-08-12T15:22:45.762Z"
+    "js/main.9e5cce99.js.map": {
+      "size": 2323015,
+      "modified": "2025-08-24T02:16:45.761Z"
     }
   }
 }

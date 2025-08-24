@@ -9,8 +9,8 @@ const isNetlify = process.env.NETLIFY === 'true' || window.location.hostname.inc
 
 // DeepSeek API 配置
 export const DEEPSEEK_CONFIG = {
-  // 直接使用DeepSeek API，避免Netlify代理问题
-  baseURL: 'https://api.deepseek.com',
+  // Netlify部署时使用代理路径
+  baseURL: process.env.NODE_ENV === 'production' ? '/api/deepseek' : 'https://api.deepseek.com',
   apiKey: process.env.REACT_APP_DEEPSEEK_API_KEY || 'sk-7f5214ed15764dfea0b45c84c6d0c961',
   model: 'deepseek-chat',
   timeout: 60000, // 增加超时时间到60秒
@@ -20,16 +20,37 @@ export const DEEPSEEK_CONFIG = {
   }
 };
 
-// RAGflow API 配置
+// RAG API 配置 - 直接连接到RAGflow API
 export const RAG_CONFIG = {
-  // RAGflow本地部署的API地址
-  baseURL: process.env.REACT_APP_RAGFLOW_API_URL || 'http://localhost:9380',
-  timeout: 30000, // RAGflow可能需要更长时间处理
+  // RAGflow API服务器地址 (根据你的部署地址调整)
+  baseURL: process.env.REACT_APP_RAGFLOW_URL || 'http://localhost:80',
+  apiKey: process.env.REACT_APP_RAGFLOW_API_KEY || 'ragflow-k1N2ZmYjRhN2UzNDExZjA4OGQ3ZjJkMm',
+  timeout: 60000, // RAGflow处理可能需要较长时间
   retryAttempts: 2,
   retryDelay: 1000,
   headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${process.env.REACT_APP_RAGFLOW_TOKEN || ''}`
+    'Content-Type': 'application/json'
+  }
+};
+
+// RAGflow配置 - 新增
+export const RAGFLOW_CONFIG = {
+  baseURL: process.env.REACT_APP_RAGFLOW_URL || 'http://localhost:80',
+  apiKey: process.env.REACT_APP_RAGFLOW_API_KEY || 'ragflow-k1N2ZmYjRhN2UzNDExZjA4OGQ3ZjJkMm',
+  // 使用用户提供的数据集ID
+  defaultDatasetId: process.env.REACT_APP_RAGFLOW_DATASET_ID || '4b03f4127e3011f0a2a51a264d04a702',
+  // 默认的聊天ID（可选，用于维护对话上下文）
+  defaultChatId: process.env.REACT_APP_RAGFLOW_CHAT_ID || '',
+  timeout: 60000,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  // 检索配置
+  retrieval: {
+    similarity_threshold: 0.2,
+    vector_similarity_weight: 0.3,
+    top_k: 5,
+    page_size: 30
   }
 };
 
@@ -115,6 +136,7 @@ export const DEV_CONFIG = {
 const config = {
   deepseek: DEEPSEEK_CONFIG,
   rag: RAG_CONFIG,
+  ragflow: RAGFLOW_CONFIG, // 新增
   app: APP_CONFIG,
   auth: AUTH_CONFIG,
   network: NETWORK_CONFIG,

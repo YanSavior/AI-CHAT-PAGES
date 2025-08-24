@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anything LLM API 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .config-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Anything LLM API 测试工具</h1>
+        <p>这个测试页面可以帮助您验证Anything LLM服务是否正常运行。</p>
+        
+        <div class="config-section">
+            <h3>⚙️ 配置信息</h3>
+            <label>API密钥:</label>
+            <input type="text" id="apiKey" value="5DW5A42-8K7400V-NP3XPHT-MPHMMRP">
+            
+            <label>服务器地址:</label>
+            <input type="text" id="baseURL" value="http://localhost:3001">
+            
+            <label>工作空间名称:</label>
+            <input type="text" id="workspaceName" value="test">
+        </div>
+
+        <div class="test-section">
+            <h3>1. 检查系统状态</h3>
+            <p>测试Anything LLM服务器是否正常运行</p>
+            <button onclick="testSystemHealth()">检查系统状态</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 验证工作空间</h3>
+            <p>检查指定的工作空间是否存在</p>
+            <button onclick="testWorkspace()">验证工作空间</button>
+            <div id="workspaceResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 发送测试消息</h3>
+            <p>向工作空间发送一条测试消息</p>
+            <textarea id="testMessage" rows="3" placeholder="输入要测试的消息...">你好，请介绍一下重庆邮电大学</textarea>
+            <br>
+            <button onclick="testChat()">发送测试消息</button>
+            <div id="chatResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 获取工作空间文档</h3>
+            <p>查看工作空间中的文档列表</p>
+            <button onclick="testDocuments()">获取文档列表</button>
+            <div id="documentsResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 获取配置
+        function getConfig() {
+            return {
+                apiKey: document.getElementById('apiKey').value,
+                baseURL: document.getElementById('baseURL').value,
+                workspaceName: document.getElementById('workspaceName').value
+            };
+        }
+
+        // 创建API请求头
+        function getHeaders() {
+            const config = getConfig();
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${config.apiKey}`,
+                'Accept': 'application/json'
+            };
+        }
+
+        // 显示结果
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = message;
+        }
+
+        // 显示信息结果
+        function showInfo(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'result info';
+            element.textContent = message;
+        }
+
+        // 测试系统健康状态
+        async function testSystemHealth() {
+            const config = getConfig();
+            showInfo('healthResult', '正在检查系统状态...');
+            
+            try {
+                const response = await fetch(`${config.baseURL}/api/system`, {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('healthResult', `✅ 系统状态正常！\n\n响应数据:\n${JSON.stringify(data, null, 2)}`, true);
+                } else {
+                    showResult('healthResult', `❌ 系统状态检查失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, false);
+                }
+            } catch (error) {
+                showResult('healthResult', `❌ 连接失败: ${error.message}\n\n请检查:\n1. Anything LLM服务是否正在运行\n2. 服务器地址是否正确\n3. 网络连接是否正常`, false);
+            }
+        }
+
+        // 测试工作空间
+        async function testWorkspace() {
+            const config = getConfig();
+            showInfo('workspaceResult', '正在验证工作空间...');
+            
+            try {
+                const response = await fetch(`${config.baseURL}/api/workspace/${config.workspaceName}`, {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('workspaceResult', `✅ 工作空间 "${config.workspaceName}" 验证成功！\n\n工作空间信息:\n${JSON.stringify(data, null, 2)}`, true);
+                } else if (response.status === 404) {
+                    showResult('workspaceResult', `❌ 工作空间 "${config.workspaceName}" 不存在\n\n请检查工作空间名称是否正确`, false);
+                } else {
+                    showResult('workspaceResult', `❌ 工作空间验证失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, false);
+                }
+            } catch (error) {
+                showResult('workspaceResult', `❌ 请求失败: ${error.message}`, false);
+            }
+        }
+
+        // 测试聊天功能
+        async function testChat() {
+            const config = getConfig();
+            const message = document.getElementById('testMessage').value;
+            
+            if (!message.trim()) {
+                showResult('chatResult', '❌ 请输入测试消息', false);
+                return;
+            }
+            
+            showInfo('chatResult', '正在发送测试消息...');
+            
+            try {
+                const requestData = {
+                    message: message,
+                    mode: 'chat',
+                    sessionId: `test_session_${Date.now()}`
+                };
+                
+                const response = await fetch(`${config.baseURL}/api/workspace/${config.workspaceName}/chat`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('chatResult', `✅ 聊天测试成功！\n\n问题: ${message}\n\n回答: ${data.textResponse || data.response || '无响应内容'}\n\n完整响应:\n${JSON.stringify(data, null, 2)}`, true);
+                } else {
+                    const errorData = await response.text();
+                    showResult('chatResult', `❌ 聊天测试失败\n状态码: ${response.status}\n错误信息: ${errorData}`, false);
+                }
+            } catch (error) {
+                showResult('chatResult', `❌ 请求失败: ${error.message}`, false);
+            }
+        }
+
+        // 测试文档列表
+        async function testDocuments() {
+            const config = getConfig();
+            showInfo('documentsResult', '正在获取文档列表...');
+            
+            try {
+                const response = await fetch(`${config.baseURL}/api/workspace/${config.workspaceName}/documents`, {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('documentsResult', `✅ 文档列表获取成功！\n\n文档数量: ${Array.isArray(data) ? data.length : '未知'}\n\n文档信息:\n${JSON.stringify(data, null, 2)}`, true);
+                } else {
+                    showResult('documentsResult', `❌ 获取文档列表失败\n状态码: ${response.status}\n状态文本: ${response.statusText}`, false);
+                }
+            } catch (error) {
+                showResult('documentsResult', `❌ 请求失败: ${error.message}`, false);
+            }
+        }
+
+        // 页面加载时自动检查系统状态
+        window.onload = function() {
+            setTimeout(testSystemHealth, 1000);
+        };
+    </script>
+</body>
+</html> 

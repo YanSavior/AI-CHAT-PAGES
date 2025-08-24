@@ -1,0 +1,83 @@
+{
+  "name": "重邮AI问答系统",
+  "description": "基于DeepSeek和Dify的智能问答系统，支持用户认证和知识库管理",
+  "repository": "https://github.com/your-username/ai-chat-app",
+  "logo": "https://your-domain.com/favicon.svg",
+  "success_url": "/",
+  "env": {
+    "REACT_APP_DEEPSEEK_API_KEY": {
+      "description": "DeepSeek API密钥，用于AI对话功能",
+      "required": true
+    },
+    "REACT_APP_DEEPSEEK_API_URL": {
+      "description": "DeepSeek API地址",
+      "value": "https://api.deepseek.com",
+      "required": false
+    },
+    "REACT_APP_APP_NAME": {
+      "description": "应用名称",
+      "value": "重邮AI问答系统",
+      "required": false
+    },
+    "REACT_APP_VERSION": {
+      "description": "应用版本",
+      "value": "1.0.0",
+      "required": false
+    },
+    "REACT_APP_ENVIRONMENT": {
+      "description": "运行环境",
+      "value": "production",
+      "required": false
+    },
+    "REACT_APP_ENABLE_ADMIN_MODE": {
+      "description": "是否启用管理员模式",
+      "value": "true",
+      "required": false
+    },
+    "REACT_APP_ENABLE_FILE_UPLOAD": {
+      "description": "是否启用文件上传功能",
+      "value": "true",
+      "required": false
+    },
+    "REACT_APP_ENABLE_KNOWLEDGE_EXPORT": {
+      "description": "是否启用知识库导出功能",
+      "value": "true",
+      "required": false
+    },
+    "REACT_APP_ENABLE_LOCAL_RAG": {
+      "description": "是否启用本地RAG功能",
+      "value": "true",
+      "required": false
+    },
+    "REACT_APP_MAX_MESSAGE_LENGTH": {
+      "description": "最大消息长度限制",
+      "value": "5000",
+      "required": false
+    },
+    "REACT_APP_MAX_KNOWLEDGE_ITEMS": {
+      "description": "最大知识库条目数",
+      "value": "1000",
+      "required": false
+    },
+    "REACT_APP_SESSION_TIMEOUT": {
+      "description": "会话超时时间（毫秒）",
+      "value": "3600000",
+      "required": false
+    }
+  },
+  "build": {
+    "command": "npm run build:netlify",
+    "publish": "build",
+    "environment": {
+      "NODE_VERSION": "18",
+      "NPM_VERSION": "9"
+    }
+  },
+  "addons": [],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  }
+}
